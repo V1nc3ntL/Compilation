@@ -147,8 +147,42 @@ listtypedecl:
 /* A completer et/ou remplacer avec d'autres fonctions */
 node_t make_node(node_nature nature, int nops, ...) {
     va_list ap;
+    va_start(ap,nops);
+    
+    node_t ret = malloc(sizeof(node_s));
+    ret->nops = nops;
+    ret->lineno= yylineno;    
+    ret->nature = nature;
 
-    return NULL;
+    if( (ret->type == TYPE_NONE) || (ret->type == TYPE_VOID )){
+        ret->value = NULL;
+    }else{
+        if(ret-type == TYPE_STRING)
+            // récupérer la valeur
+            //ret->value = yyy
+        else   
+            // récupérer la valeur
+            //ret->value = yyy
+    }
+    // Cas token sans rien
+    if(!nops){    
+        ret->type = TYPE_NONE;
+        ret->opr = NULL;
+        ret->decl_node = NULL;
+    }
+    // Cas token avec au moins 2 arguments
+    else{
+        ret1 = make_node();
+        ret2 = make_node();
+
+        (*opr) = ret1;
+    //  (*(opr+1)) = ret2;
+      
+    }
+    
+    va_end(ap);
+
+    return ret;
 }
 
 
