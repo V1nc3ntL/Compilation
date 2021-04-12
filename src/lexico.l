@@ -29,9 +29,11 @@ extern int yydebug;
 LETTRE          [a-zA-Z]
 /* A completer ; fausses definitions pour passer la compilation */
 IDF             ^[a-zA-Z_][a-zA-Z0-9_]*
-ENTIER          ^[0-9]+
+ENTIER          ^[0-9]+ 
 CHAINE          \'*\'
 COMMENTAIRE     \/\/*EOL
+ENTIER_DEC      ^[0-9]+[,.][0-9]+
+ENTIER_HEXA     ^[0-9a-fA-F]+
 
 %%
 
@@ -46,7 +48,33 @@ COMMENTAIRE     \/\/*EOL
 "for"           return TOK_FOR;
 "do"            return TOK_DO;
 "print"         return TOK_PRINT;
+","             return TOK_COMMA;
+";"             return TOK_SEMICOL;
+"{"             return TOK_LACC;
+"}"             return TOK_RACC;
+"<<<"           return TOK_SLA;
+">>>"           return TOK_SRA;
+">>"            return TOK_SRL;
+"<<"            return TOK_SLR;
+">="            return TOK_GE;
+"<="            return TOK_LE;
+"=="            return TOK_EQ;
+"||"            return TOK_OR;
+"&&"            return TOK_AND;
+"|"             return TOK_BOR;
+"&"             return TOK_BAND;
+"^"             return TOK_BXOR;
+"+"             return TOK_PLUS;
+"-"             return TOK_MINUS;
+"*"             return TOK_MUL;
+"/"             return TOK_DIV;
+"%"             return TOK_MOD;
+"!"             return TOK_NOT;
+"~"             return TOK_BNOT;
 
+
+")"             return TOK_RPAR;
+"("             return TOK_LPAR
 
 
 {IDF} {
@@ -67,7 +95,7 @@ COMMENTAIRE     \/\/*EOL
 }
 
 {COMMENTAIRE} {
-    return 0;
+                return 0;
 }
 
 [ \t\n]+
