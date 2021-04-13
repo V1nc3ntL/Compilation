@@ -55,7 +55,7 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 "<<<"           return TOK_SLA;
 ">>>"           return TOK_SRA;
 ">>"            return TOK_SRL;
-"<<"            return TOK_SLR;
+"<<"            return TOK_SLL;
 ">="            return TOK_GE;
 "<="            return TOK_LE;
 "=="            return TOK_EQ;
@@ -74,7 +74,7 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 
 
 ")"             return TOK_RPAR;
-"("             return TOK_LPAR
+"("             return TOK_LPAR;
 
 
 {IDF} {

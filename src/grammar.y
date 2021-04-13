@@ -58,7 +58,7 @@ node_t make_node(node_nature nature, int nops, ...);
 %left TOK_BAND
 %left TOK_EQ TOK_NE
 %left TOK_GT TOK_LT TOK_GE TOK_LE
-%left TOK_SRL TOK_SRA TOK_SLL
+%left TOK_SRL TOK_SRA TOK_SLL TOK_SLA
 %left TOK_PLUS TOK_MINUS
 %left TOK_MUL TOK_DIV TOK_MOD
 %left TOK_UMINUS TOK_NOT TOK_BNOT
@@ -84,105 +84,138 @@ program:
         ;
 
 listdeclnonnull:
-            { $$ = NULL; }
-        ;
+                vardecl
+                { 
+                    $$ = make_node(NODE_LIST,1,NULL,$1); 
+                }
+                | listdeclnonnull vardecl
+                {
+                    $$ = make_node(NODE_LIST,2,$1,$2);
+                };
 
 maindecl:
-            { $$ = NULL; }
-        ;
+        type ident TOK_LPAR TOK_RPAR block
+        { 
+            $$ = make_node(NODE_FUNC,2,$1,$2); 
+        };
 
 listdecl:
-            { $$ = NULL; }
-        ;
+        listdeclnonnull
+        {
+            $$ = make_node(NODE_LIST,1,NULL,$1);
+        };
 
 vardecl:
-            { $$ = NULL; }
-        ;
+        type listtypedecl TOK_SEMICOL
+        {
+            $$ = NULL;
+        };
 
-decl :
-    { $$ = NULL; }
-        ;
+decl:
+        ident
+        {
+            $$ = NULL;
+        }
+        | ident TOK_AFFECT expr
+        {
+            $$ = NULL; 
+        };
 
-ident :
-    { $$ = NULL; }
-        ;
+ident:
+        TOK_IDENT
+        {$$ = NULL;};
 
-type :
-    { $$ = NULL; }
-        ;
+type:
+    TOK_INT
+    | TOK_BOOL
+    {$$ = NULL;}
+    | TOK_VOID
+    {$$ = NULL;};
 
 paramprint:
-    { $$ = NULL; }
-        ;
+         ident
+        {$$ = NULL;}
+        | TOK_STRING
+        {$$ = NULL;};
 
 listparamprint:
-    { $$ = NULL; }
-        ;
+            listparamprint TOK_COMMA paramprint
+            { $$ = NULL;}
+            | paramprint
+            { $$ = NULL;};
 
 expr:
-    { $$ = NULL; }
-        ;
+     expr TOK_MUL expr
+    { $$ = NULL;}
+    | expr TOK_DIV expr
+    { $$ = NULL;}
+    | expr TOK_PLUS expr
+    { $$ = NULL;}
+    | expr TOK_MINUS expr
+    { $$ = NULL;}
+    | expr TOK_MOD expr
+    { $$ = NULL;}
+    | expr TOK_LT expr
+    { $$ = NULL;}
+    | expr TOK_GT expr
+    { $$ = NULL;}
+    | TOK_MINUS expr %prec TOK_UMINUS
+    { $$ = NULL;}
+    | expr TOK_GE expr
+    { $$ = NULL;}
+    | expr TOK_LE expr
+    { $$ = NULL;}
+    | expr TOK_EQ expr
+    { $$ = NULL;};
+
 
 block:
-    { $$ = NULL; }
-        ;
+    TOK_LACC listdecl listinst TOK_RACC
+    {$$ = NULL;};
 
 inst:
-    { $$ = NULL; }
-        ;
+    expr TOK_SEMICOL
+    {$$ = NULL;}
+    | TOK_IF TOK_LPAR expr TOK_RPAR inst TOK_ELSE inst
+    {$$ = NULL;} 
+    | TOK_IF TOK_LPAR expr TOK_RPAR inst %prec TOK_THEN
+    {$$ = NULL;}
+    | TOK_WHILE TOK_LPAR expr TOK_RPAR inst
+    {$$ = NULL;}
+    | TOK_FOR TOK_LPAR expr TOK_SEMICOL expr TOK_SEMICOL expr TOK_RPAR inst
+    {$$ = NULL;}
+    | TOK_DO inst TOK_WHILE TOK_LPAR expr TOK_RPAR TOK_SEMICOL
+    {$$ = NULL;}
+    | block
+    {$$ = NULL;}
+    | TOK_SEMICOL
+    {$$ = NULL;}
+    | TOK_PRINT TOK_LPAR listparamprint TOK_RPAR TOK_SEMICOL
+    {$$ = NULL;};
 
 listinstnonnull:
-    { $$ = NULL; }
-        ;
+                 inst
+                 {$$ = NULL;}
+                | listinstnonnull inst
+                {$$ = NULL;};
 
 listinst:
-    { $$ = NULL; }
-        ;
+        listinstnonnull
+        {$$ = NULL;}
+        |
+        {$$ = NULL;};
 
 listtypedecl:
-    { $$ = NULL; }
-        ;
+            decl
+            {$$ = NULL;}
+            | listtypedecl TOK_COMMA decl
+            {$$ = NULL;};
 %%
 
 /* A completer et/ou remplacer avec d'autres fonctions */
 node_t make_node(node_nature nature, int nops, ...) {
     va_list ap;
-    va_start(ap,nops);
-    
-    node_t ret = malloc(sizeof(node_s));
-    ret->nops = nops;
-    ret->lineno= yylineno;    
-    ret->nature = nature;
-
-    if( (ret->type == TYPE_NONE) || (ret->type == TYPE_VOID )){
-        ret->value = NULL;
-    }else{
-        if(ret-type == TYPE_STRING)
-            // récupérer la valeur
-            //ret->value = yyy
-        else   
-            // récupérer la valeur
-            //ret->value = yyy
-    }
-    // Cas token sans rien
-    if(!nops){    
-        ret->type = TYPE_NONE;
-        ret->opr = NULL;
-        ret->decl_node = NULL;
-    }
-    // Cas token avec au moins 2 arguments
-    else{
-        ret1 = make_node();
-        ret2 = make_node();
-
-        (*opr) = ret1;
-    //  (*(opr+1)) = ret2;
-      
-    }
-    
-    va_end(ap);
-
-    return ret;
+    return NULL;
 }
 
 
@@ -212,4 +245,3 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-
