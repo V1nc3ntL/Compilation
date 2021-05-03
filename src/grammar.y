@@ -50,6 +50,9 @@ node_t make_node(node_nature nature, int nops, ...);
 
 %nonassoc TOK_THEN
 %nonassoc TOK_ELSE
+
+%right TOK_AFFECT
+
 /* A completer */
 %left TOK_OR
 %left TOK_AND
@@ -62,11 +65,12 @@ node_t make_node(node_nature nature, int nops, ...);
 %left TOK_PLUS TOK_MINUS
 %left TOK_MUL TOK_DIV TOK_MOD
 %left TOK_UMINUS TOK_NOT TOK_BNOT
+
 %type <intval> TOK_INTVAL
 %type <strval> TOK_IDENT TOK_STRING
 
 %type <ptr> program listdecl listdeclnonnull vardecl ident type listtypedecl decl maindecl listinst listinstnonnull inst block expr listparamprint paramprint
-%type <ptr> listinst listinstnonnull inst block expr listparamprint paramprint
+
 %%
 
 /* Completer les regles et la creation de l'arbre */
@@ -86,7 +90,7 @@ program:
 listdeclnonnull:
                 vardecl
                 { 
-                    $$ = make_node(NODE_LIST,1,NULL,$1); 
+                    $$ = make_node(NODE_LIST,2,NULL,$1); 
                 }
                 | listdeclnonnull vardecl
                 {
@@ -96,82 +100,83 @@ listdeclnonnull:
 maindecl:
         type ident TOK_LPAR TOK_RPAR block
         { 
-            $$ = make_node(NODE_FUNC,2,$1,$2); 
+            $$ = make_node(NODE_FUNC,3,$1,$2,$5); /* A REVOIR */
         };
 
 listdecl:
         listdeclnonnull
         {
-            $$ = make_node(NODE_LIST,1,NULL,$1);
+            $$ = make_node(NODE_LIST,2,NULL,$1);
         };
 
 vardecl:
         type listtypedecl TOK_SEMICOL
         {
-            $$ = NULL;
+            $$ = make_node(NODE_DECLS,2,$1,$2);
         };
 
 decl:
         ident
         {
-            $$ = NULL;
+            $$ = make_node(NODE_DECL,2,NULL,$1);
         }
         | ident TOK_AFFECT expr
         {
-            $$ = NULL; 
+            $$ = make_node(NODE_DECL,2,$1,$3); 
         };
 
 ident:
         TOK_IDENT
-        {$$ = NULL;};
+        {$$ = make_node(NODE_IDENT,2,NULL,$1);};
 
 type:
     TOK_INT
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
     | TOK_BOOL
-    {$$ = NULL;}
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
     | TOK_VOID
-    {$$ = NULL;};
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
 
 paramprint:
          ident
-        {$$ = NULL;}
+        {$$ = make_node(NODE_PRINT,2,NULL,$1);}
         | TOK_STRING
-        {$$ = NULL;};
+        {$$ = make_node(NODE_PRINT,2,NULL,NULL);};
 
 listparamprint:
             listparamprint TOK_COMMA paramprint
-            { $$ = NULL;}
+            { $$ = make_node(NODE_PRINT,2,$1,$3);}
             | paramprint
-            { $$ = NULL;};
+            { $$ = make_node(NODE_PRINT,2,NULL,$1);};
 
 expr:
      expr TOK_MUL expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_MUL,2,$1,$3);}
     | expr TOK_DIV expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_DIV,2,$1,$3);}
     | expr TOK_PLUS expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_PLUS,2,$1,$3);}
     | expr TOK_MINUS expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_MINUS,2,$1,$3);}
     | expr TOK_MOD expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_MOD,2,$1,$3);}
     | expr TOK_LT expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_LT,2,$1,$3);}
     | expr TOK_GT expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_GT,2,$1,$3);}
     | TOK_MINUS expr %prec TOK_UMINUS
     { $$ = NULL;}
     | expr TOK_GE expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_GE,2,$1,$3);}
     | expr TOK_LE expr
-    { $$ = NULL;}
+    { $$ = make_node(NODE_LE,2,$1,$3);}
     | expr TOK_EQ expr
-    { $$ = NULL;};
+    { $$ = make_node(NODE_EQ,2,$1,$3);};
 
 
 block:
     TOK_LACC listdecl listinst TOK_RACC
-    {$$ = NULL;};
+    {$$ = make_node(NODE_BLOCK,2,$2,$3);};
 
 inst:
     expr TOK_SEMICOL
@@ -194,22 +199,22 @@ inst:
     {$$ = NULL;};
 
 listinstnonnull:
-                 inst
-                 {$$ = NULL;}
+                inst
+                {$$ = make_node(NODE_LIST,1,NULL,$1);}
                 | listinstnonnull inst
-                {$$ = NULL;};
+                {$$ = make_node(NODE_LIST,2,N);};
 
 listinst:
         listinstnonnull
-        {$$ = NULL;}
+        {$$ = make_node(NODE_LIST,1,NULL,$1);}
         |
         {$$ = NULL;};
 
 listtypedecl:
             decl
-            {$$ = NULL;}
+            {$$ = make_node(NODE_LIST,1,NULL,$1);}
             | listtypedecl TOK_COMMA decl
-            {$$ = NULL;};
+            {$$ = make_node(NODE_LIST,2,$1,$3);};
 %%
 
 /* A completer et/ou remplacer avec d'autres fonctions */
