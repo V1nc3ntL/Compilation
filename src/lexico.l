@@ -52,9 +52,8 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 ";"             return TOK_SEMICOL;
 "{"             return TOK_LACC;
 "}"             return TOK_RACC;
-"<<<"           return TOK_SLA;
-">>>"           return TOK_SRA;
 ">>"            return TOK_SRL;
+">>>"           return TOK_SRA;
 "<<"            return TOK_SLL;
 ">="            return TOK_GE;
 "<="            return TOK_LE;
@@ -71,8 +70,6 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 "%"             return TOK_MOD;
 "!"             return TOK_NOT;
 "~"             return TOK_BNOT;
-
-
 ")"             return TOK_RPAR;
 "("             return TOK_LPAR;
 
