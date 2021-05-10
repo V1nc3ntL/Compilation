@@ -197,7 +197,7 @@ expr:
     | TOK_BNOT expr
     {$$ = make_node(NODE_BNOT,2,NULL,$2);}
     | TOK_LPAR expr TOK_RPAR
-    {$$ = NULL;}
+    {$$ = $2;}
     | ident TOK_AFFECT expr
     {$$ = make_node(NODE_AFFECT,2,$1,$3);}
     | TOK_INTVAL
