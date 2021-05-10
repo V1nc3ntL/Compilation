@@ -255,8 +255,25 @@ listtypedecl:
 
 /* A completer et/ou remplacer avec d'autres fonctions */
 node_t make_node(node_nature nature, int nops, ...) {
+
     va_list ap;
-    return NULL;
+    int i;
+    node_t node = malloc(sizeof(node_t));
+    
+    node -> nature = nature; // Définition de la nature de la node
+    node -> lineno = yylineno; // Définit la ligne avec la variable globale
+    node -> nops = nops; // On définit le nombre d'opérandes
+
+    for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
+    {
+        node -> opr[i] = va_arg(ap,node_s*);
+    }
+    
+    va_start(ap,nops);
+
+
+    va_end(ap);
+    return node;
 }
 
 
