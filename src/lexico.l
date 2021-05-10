@@ -5,7 +5,7 @@
 
 #include "defs.h"
 #include "common.h"
-
+#include "argparser.h"
 #include "y.tab.h"
 
 int yyparse(node_t * program_root);
@@ -112,17 +112,46 @@ int yywrap(void) {
 
 int main(int argc, char ** argv) {
     node_t program_root;
-    parse_args(argc, argv);
+   
+
+    int hOption=0,voption = 0,traceLvl = 0;
+    char* outName = NULL;
+    
+
+    int code = argParser(argc,argv);
+
+    switch(code){
+        case B_OPTION:
+            printf("\n***\tGraves\tLefebvre\tCompilateur minicc\t***");
+            break;
+
+        default:
+            break;
+    }
+
+     parse_args(argc, argv);
     #if YYDEBUG
     yydebug = 1;
     #endif
     
-    yyin = fopen(infile, "r");
-    yyparse(&program_root);
-    fclose(yyin);
-    analyse_tree(program_root);
-    yylex_destroy();
+        yyin = fopen(argv[1], "r");
+        yyparse(&program_root);
+        fclose(yyin);
+    
+        analyse_tree(program_root);
+        yylex_destroy();
+        return 0;
+    
+    
+    
+    
     return 0;
+
+    
+
+    
+
+    
 }
 
 
