@@ -26,14 +26,15 @@ extern int yydebug;
 %option yylineno
 
 
-LETTRE          [a-zA-Z]
+
 /* A completer ; fausses definitions pour passer la compilation */
-IDF             ^[a-zA-Z_][a-zA-Z0-9_]*
-ENTIER          ^[0-9]+ 
+IDF             [a-zA-Z_][a-zA-Z0-9_].*
+ENTIER          [0-9]+ 
 CHAINE          \'*\'
-COMMENTAIRE     \/\/*EOL
-ENTIER_DEC      ^[0-9]+[,.][0-9]+
-ENTIER_HEXA     ^[0-9a-fA-F]+
+LETTRE          [a-zA-Z]
+COMMENTAIRE     \/\/.*
+ENTIER_DEC      [0-9]+[,.][0-9]+
+ENTIER_HEXA     [0-9a-fA-F]+
 
 %%
 
@@ -48,8 +49,24 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 "for"           return TOK_FOR;
 "do"            return TOK_DO;
 "print"         return TOK_PRINT;
-","             return TOK_COMMA;
+
+"+"             return TOK_PLUS;
+"-"             return TOK_MINUS;
+"*"             return TOK_MUL;
+"/"             return TOK_DIV;
+"%"             return TOK_MOD;
+">"             return TOK_GT;
+"<"             return TOK_LT;
+"!"             return TOK_NOT;
+"~"             return TOK_BNOT;
+"&"             return TOK_BAND;
+"|"             return TOK_BOR;
+"^"             return TOK_BXOR;
+"="             return TOK_EQ;
 ";"             return TOK_SEMICOL;
+","             return TOK_COMMA;
+"("             return TOK_LPAR;
+")"             return TOK_RPAR;
 "{"             return TOK_LACC;
 "}"             return TOK_RACC;
 ">>"            return TOK_SRL;
@@ -58,21 +75,9 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 ">="            return TOK_GE;
 "<="            return TOK_LE;
 "=="            return TOK_EQ;
-"||"            return TOK_OR;
+"!="            return TOK_NE;
 "&&"            return TOK_AND;
-"|"             return TOK_BOR;
-"&"             return TOK_BAND;
-"^"             return TOK_BXOR;
-"+"             return TOK_PLUS;
-"-"             return TOK_MINUS;
-"*"             return TOK_MUL;
-"/"             return TOK_DIV;
-"%"             return TOK_MOD;
-"!"             return TOK_NOT;
-"~"             return TOK_BNOT;
-")"             return TOK_RPAR;
-"("             return TOK_LPAR;
-
+"||"            return TOK_OR;
 
 {IDF} {
                 yylval.strval = strdup(yytext);
@@ -92,7 +97,7 @@ ENTIER_HEXA     ^[0-9a-fA-F]+
 }
 
 {COMMENTAIRE} {
-                return 0;
+                
 }
 
 [ \t\n]+
@@ -146,12 +151,6 @@ int main(int argc, char ** argv) {
     
     
     return 0;
-
-    
-
-    
-
-    
 }
 
 

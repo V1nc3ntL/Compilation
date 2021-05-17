@@ -41,7 +41,6 @@ node_t make_node(node_nature nature, int nops, ...);
 };
 
 
-/* Definir les token ici avec leur associativite, dans le bon ordre */
 %token TOK_VOID    TOK_INT      TOK_INTVAL  TOK_BOOL   TOK_TRUE  TOK_FALSE
 %token TOK_IDENT   TOK_IF       TOK_ELSE    TOK_WHILE  TOK_FOR   TOK_PRINT
 %token TOK_SEMICOL TOK_COMMA    TOK_LPAR    TOK_RPAR   TOK_LACC  TOK_RACC
@@ -53,7 +52,6 @@ node_t make_node(node_nature nature, int nops, ...);
 
 %right TOK_AFFECT
 
-/* A completer */
 %left TOK_OR
 %left TOK_AND
 %left TOK_BOR
@@ -62,14 +60,18 @@ node_t make_node(node_nature nature, int nops, ...);
 %left TOK_EQ TOK_NE
 %left TOK_GT TOK_LT TOK_GE TOK_LE
 %left TOK_SRL TOK_SRA TOK_SLL
+
 %left TOK_PLUS TOK_MINUS
 %left TOK_MUL TOK_DIV TOK_MOD
+
 %left TOK_UMINUS TOK_NOT TOK_BNOT
 
-%type <intval> TOK_INTVAL
-%type <strval> TOK_IDENT TOK_STRING
+%type <intval> TOK_INTVAL;
+%type <strval> TOK_IDENT TOK_STRING;
 
-%type <ptr> program listdecl listdeclnonnull vardecl ident type listtypedecl decl maindecl listinst listinstnonnull inst block expr listparamprint paramprint
+%type <ptr> program listdecl listdeclnonnull vardecl ident type listtypedecl decl maindecl
+%type <ptr> listinst listinstnonnull inst block expr listparamprint paramprint
+
 
 %%
 
@@ -89,24 +91,18 @@ program:
 
 listdeclnonnull:
                 vardecl
-                { 
-                    $$ = $1; 
-                }
+                {$$ = $1;}
                 | listdeclnonnull vardecl
-                {
-                    $$ = make_node(NODE_LIST,2,$1,$2);
-                };
+                {$$ = make_node(NODE_LIST,2,$1,$2);};
 
 maindecl:
         type ident TOK_LPAR TOK_RPAR block
-        { 
-            $$ = make_node(NODE_FUNC,3,$1,$2,$5); 
-        };
+        {$$ = make_node(NODE_FUNC,3,$1,$2,$5);};
 
 listdecl:
         listdeclnonnull
         {
-            $$ = make_node(NODE_LIST,2,NULL,$1);
+            $$ = make_node(NODE_LIST,1,$1);
         }
         |
         {$$ = NULL;};
@@ -120,7 +116,7 @@ vardecl:
 decl:
         ident
         {
-            $$ = make_node(NODE_DECL,2,NULL,$1);
+            $$ = make_node(NODE_DECL,1,$1);
         }
         | ident TOK_AFFECT expr
         {
@@ -129,21 +125,21 @@ decl:
 
 ident:
         TOK_IDENT
-        {$$ = make_node(NODE_IDENT,2,NULL,NULL);};
+        {$$ = make_node(NODE_IDENT,0);};
 
 type:
     TOK_INT
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0);}
     | TOK_BOOL
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0);}
     | TOK_VOID
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0);}
 
 paramprint:
         ident
         {$$ = $1;}
         | TOK_STRING
-        {$$ = make_node(NODE_STRINGVAL,2,NULL,NULL);};
+        {$$ = make_node(NODE_STRINGVAL,0);};
 
 listparamprint:
             listparamprint TOK_COMMA paramprint
@@ -167,7 +163,7 @@ expr:
     | expr TOK_GT expr
     { $$ = make_node(NODE_GT,2,$1,$3);}
     | TOK_MINUS expr %prec TOK_UMINUS
-    { $$ = make_node(NODE_UMINUS,2,NULL,$2);}
+    { $$ = make_node(NODE_UMINUS,1,$2);}
     | expr TOK_GE expr
     { $$ = make_node(NODE_GE,2,$1,$3);}
     | expr TOK_LE expr
@@ -193,19 +189,19 @@ expr:
     | expr TOK_SLL expr
     {$$ = make_node(NODE_SLL,2,$1,$3);}
     | TOK_NOT expr
-    {$$ = make_node(NODE_NOT,2,NULL,$2);}
+    {$$ = make_node(NODE_NOT,1,$2);}
     | TOK_BNOT expr
-    {$$ = make_node(NODE_BNOT,2,NULL,$2);}
+    {$$ = make_node(NODE_BNOT,1,$2);}
     | TOK_LPAR expr TOK_RPAR
     {$$ = $2;}
     | ident TOK_AFFECT expr
-    {$$ = make_node(NODE_AFFECT,2,$1,$3);}
+    {$$ = make_node(NODE_AFFECT,2,$1,$3);} 
     | TOK_INTVAL
-    {$$ = make_node(NODE_INTVAL,2,NULL,NULL);}
+    {$$ = make_node(NODE_INTVAL,0);}
     | TOK_TRUE
-    {$$ = make_node(NODE_BOOLVAL,2,NULL,NULL);}
+    {$$ = make_node(NODE_BOOLVAL,0);}
     | TOK_FALSE
-    {$$ = make_node(NODE_BOOLVAL,2,NULL,NULL);}
+    {$$ = make_node(NODE_BOOLVAL,0);}
     | ident
     { $$ = $1;};
 
@@ -232,7 +228,7 @@ inst:
     | TOK_SEMICOL
     {$$ = NULL;}
     | TOK_PRINT TOK_LPAR listparamprint TOK_RPAR TOK_SEMICOL
-    {$$ = make_node(NODE_PRINT,1,NULL,$3);};
+    {$$ = make_node(NODE_PRINT,1,$3);};
 
 listinstnonnull:
                 inst
@@ -259,26 +255,48 @@ node_t make_node(node_nature nature, int nops, ...) {
     va_list ap;
     int i;
     node_t node = malloc(sizeof(node_t));
+
+    
     
     node -> nature = nature; // Définition de la nature de la node
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
 
-    for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
+    if(nops != 0) // On vérifie bien qu'il y ait au moins 1 enfant
     {
-        node -> opr[i] = va_arg(ap,node_s*);
+        for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
+        {
+            node -> opr[i] = va_arg(ap,node_s*);
+        }
+
     }
-    
-    va_start(ap,nops);
-
-
+    switch(nature)
+    {
+    case NODE_TYPE:
+        va_start(ap,nops);
+        node -> type = va_arg(ap,node_type);
+        break;
+    case NODE_INTVAL:
+        node -> value = yylval.intval;
+        break;
+    case NODE_IDENT:
+        node -> ident = strdup(yylval.strval);
+        break;
+    case NODE_BOOLVAL:
+        va_start(ap,nops);
+        node -> value = va_arg(ap,int);
+        break;
+    case NODE_STRINGVAL:
+        node -> str = strdup(yylval.strval);
+        break;
+    }
     va_end(ap);
     return node;
 }
 
 
 void analyse_tree(node_t root) {
-    //dump_tree(root, "apres_syntaxe.dot");
+    dump_tree(root, "apres_syntaxe.dot");
     if (!stop_after_syntax) {
         analyse_passe_1(root);
         //dump_tree(root, "apres_passe_1.dot");
