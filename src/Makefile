@@ -22,7 +22,7 @@ INCLUDE=-I$(UTILS)
 
 all: minicc
 
-minicc: argparser.o y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
+minicc: y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
 	@echo "| Linking / Creating binary $@"
 	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $@ -lminiccutils
 
@@ -30,7 +30,7 @@ y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
 	@yacc -d grammar.y
 
-lex.yy.c: lexico.l argparser.o Makefile
+lex.yy.c: lexico.l Makefile
 	@echo "| lex $(LEX_FLAGS) lexico.l"
 	@lex $(LEX_FLAGS) lexico.l
 
@@ -55,10 +55,6 @@ passe_1.o: passe_1.c passe_1.h defs.h common.h Makefile
 	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 passe_2.o: passe_2.c passe_2.h arch.h defs.h common.h Makefile
-	@echo "| Compiling $@"
-	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
-
-argparser.o: argparser.c argparser.h
 	@echo "| Compiling $@"
 	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
