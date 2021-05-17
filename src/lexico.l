@@ -117,38 +117,99 @@ int yywrap(void) {
 
 int main(int argc, char ** argv) {
     node_t program_root;
-   
-
     int hOption=0,voption = 0,traceLvl = 0;
     char* outName = NULL;
     
+    int curArg, code = 0, nRegister = MAX_REG;
 
-    int code = argParser(argc,argv);
-
-    switch(code){
-        case B_OPTION:
-            printf("\n***\tGraves\tLefebvre\tCompilateur minicc\t***");
-            break;
-
-        default:
-            break;
-    }
-
-     parse_args(argc, argv);
     #if YYDEBUG
     yydebug = 1;
     #endif
-    
-        yyin = fopen(argv[1], "r");
-        yyparse(&program_root);
-        fclose(yyin);
-    
-        analyse_tree(program_root);
-        yylex_destroy();
+    int i = 0 ;
+
+    while((curArg=getopt(argc,argv,"botrsvh"))!=-1){
+        
+        i++;
+
+        if(code & B_OPTION)
+            return -1;
+            
+        if(code & H_OPTION){
+            printf(OPTIONS_DESC);
+            return 0;
+        }
+
+        switch(curArg){
+            case 'b':
+                code |= B_OPTION;
+                break;
+            case 'h':
+                printf(OPTIONS_DESC);
+                return 0;
+
+            case 't': 
+                traceLvl = atoi(argv[i+1]);
+                code |= T_OPTION;
+                if( (traceLvl < MIN_TRACE) || (traceLvl > MAX_TRACE))   
+                    return -1;
+                break;
+
+            case 'r':
+                nRegister = atoi(argv[i+1]);
+                code |= R_OPTION;
+                if( (nRegister < MIN_REG) || (nRegister > MAX_REG))   
+                    return -1;
+                break;
+
+            case 's':
+                if(code & V_OPTION)
+                    return -1;
+                else                
+                    code |= S_OPTION;
+                break;
+
+            case 'v':
+                if(code & S_OPTION)
+                    return -1;
+                else
+                    code |= V_OPTION;
+                break;
+            
+            case 'o':
+                outName = strdup( argv[i+1]);
+                if(!outName)
+                    return -1;
+                break;
+            default:
+                break;
+        }
+    }
+
+    if(code & B_OPTION){
+        printf(BANNER);
         return 0;
-    
-    
-    
+    }
+
+    if(!(code & S_OPTION)) {
+        //Faire ce qu'il y a après syntaxique analysis
+    }
+
+    if(!(code & V_OPTION)) {
+        //Faire ce qu'il y a après première passe
+    }
+
+    if(!(code & O_OPTION)){
+        // Fichier out est DEFAULT_OUTFILE
+    }else{
+        // Fichier est outName;
+    }
+
+    yyin = fopen(argv[1], "r");
+    yyparse(&program_root);
+    fclose(yyin);
+    analyse_tree(program_root);
+    yylex_destroy();
+
     
     return 0;
 }
