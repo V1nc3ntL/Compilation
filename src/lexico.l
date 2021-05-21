@@ -30,8 +30,10 @@ extern int yydebug;
 /* A completer ; fausses definitions pour passer la compilation */
 IDF             [a-zA-Z_][a-zA-Z0-9_]*
 ENTIER          [0-9]+
-CHAINE          \".*\"
+CHAINE_CAR      [^\"\\]
+CHAINE          \"({CHAINE_CAR}|{BACK}|\015)*\"
 LETTRE          [a-zA-Z]
+BACK            \\n
 COMMENTAIRE     \/\/.*
 ENTIER_DEC      [0-9]+
 ENTIER_HEXA     [0-9a-fA-F]+
@@ -89,6 +91,7 @@ ENTIER_HEXA     [0-9a-fA-F]+
                 yylval.intval = atoi(yytext);
                 return TOK_INTVAL;
 }
+
 
 {CHAINE} {
                 yylval.strval = strdup(yytext);

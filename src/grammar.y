@@ -116,7 +116,7 @@ vardecl:
 decl:
         ident
         {
-            $$ = make_node(NODE_DECL,2,NULL,$1);
+            $$ = make_node(NODE_DECL,1,$1);
         }
         | ident TOK_AFFECT expr
         {
@@ -125,15 +125,15 @@ decl:
 
 ident:
         TOK_IDENT
-        {$$ = make_node(NODE_IDENT,2,NULL,NULL);};
+        {$$ = make_node(NODE_IDENT,0,TYPE_STRING);};
 
 type:
     TOK_INT
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0,TYPE_INT);}
     | TOK_BOOL
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0,TYPE_BOOL);}
     | TOK_VOID
-    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
+    {$$ = make_node(NODE_TYPE,0,TYPE_VOID);}
 
 paramprint:
         ident
@@ -143,9 +143,11 @@ paramprint:
 
 listparamprint:
             listparamprint TOK_COMMA paramprint
-            { $$ = make_node(NODE_PRINT,2,$1,$3);}
+            { $$ = make_node(NODE_LIST,2,$1,$3);}
             | paramprint
             { $$ = $1;};
+            
+            
 
 expr:
     expr TOK_MUL expr
@@ -197,11 +199,11 @@ expr:
     | ident TOK_AFFECT expr
     {$$ = make_node(NODE_AFFECT,2,$1,$3);} 
     | TOK_INTVAL
-    {$$ = make_node(NODE_INTVAL,0);}
+    {$$ = make_node(NODE_INTVAL,0,TYPE_INT);}
     | TOK_TRUE
-    {$$ = make_node(NODE_BOOLVAL,1);}
+    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL);}
     | TOK_FALSE
-    {$$ = make_node(NODE_BOOLVAL,0);}
+    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL);}
     | ident
     { $$ = $1;};
 
@@ -227,7 +229,7 @@ inst:
     | TOK_SEMICOL
     {$$ = NULL;}
     | TOK_PRINT TOK_LPAR listparamprint TOK_RPAR TOK_SEMICOL
-    {$$ = make_node(NODE_PRINT,2,NULL,$3);};
+    {$$ = make_node(NODE_PRINT,1,$3);};
 
 listinstnonnull:
                 inst
@@ -255,31 +257,32 @@ node_t make_node(node_nature nature, int nops, ...){
     int i = 0;
     node_t node = (node_t) malloc(sizeof(node_s));
     
-
+/*
     if(node == NULL)
     {
         return NULL;
     }
-
+*/
     node -> nature = nature; // Définition de la nature de la node
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
 
-    node -> opr = (node_t*) malloc(nops * sizeof(node_t));
+    
     
 
     
-
+/*
     if(node -> opr == NULL)
     {
         return NULL;
     }
-
+*/
     // On vérifie bien qu'il y ait au moins 1 enfant
     if(nops != 0) 
     {
+        node -> opr = (node_t*) malloc(nops * sizeof(node_t));
         va_start(ap,nops);
-        printf("nops : %d\n",node -> nops);
+        //printf("nops : %d\n",node -> nops);
         
         //node -> opr[0] = va_arg(ap,node_t);
         //node -> opr[1] = va_arg(ap,node_t);
@@ -288,6 +291,11 @@ node_t make_node(node_nature nature, int nops, ...){
             node -> opr[i] = va_arg(ap,node_t);
         }
 
+    }
+
+    else if(nops == 0)
+    {
+        node -> opr = NULL;
     }
     
  
@@ -298,9 +306,13 @@ node_t make_node(node_nature nature, int nops, ...){
         node -> type = va_arg(ap,node_type);
         break;
     case NODE_INTVAL:
+        va_start(ap,nops);
+        node -> type = va_arg(ap,node_type);
         node -> value = yylval.intval;
         break;
     case NODE_IDENT:
+        va_start(ap,nops);
+        node -> type = va_arg(ap,node_type);
         node -> ident = strdup(yylval.strval);
         break;
     case NODE_BOOLVAL:
@@ -308,6 +320,8 @@ node_t make_node(node_nature nature, int nops, ...){
         node -> value = va_arg(ap,int);
         break;
     case NODE_STRINGVAL:
+        //va_start(ap,nops);
+        //node -> type = va_arg(ap,node_type);
         node -> str = strdup(yylval.strval);
         break;
     }
