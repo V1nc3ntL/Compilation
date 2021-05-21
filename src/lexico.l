@@ -29,57 +29,57 @@ extern int yydebug;
 
 /* A completer ; fausses definitions pour passer la compilation */
 IDF             [a-zA-Z_][a-zA-Z0-9_]+
-ENTIER          [0-9]
+ENTIER          [0-9]+
 CHAINE          \'*\'
 LETTRE          [a-zA-Z]
 COMMENTAIRE     \/\/.*
-ENTIER_DEC      [0-9]+[,.][0-9]
-ENTIER_HEXA     [0-9a-fA-F]
+ENTIER_DEC      [0-9]+
+ENTIER_HEXA     [0-9a-fA-F]+
 
 
 
 %%
 
-"void"           TOK_VOID;
-"int"            TOK_INT;
-"bool"           TOK_BOOL;
-"true"           TOK_TRUE;
-"false"          TOK_FALSE;
-"if"             TOK_IF;
-"else"           TOK_ELSE;
-"while"          TOK_WHILE;
-"for"            TOK_FOR;
-"do"             TOK_DO;
-"print"          TOK_PRINT;
+"void"           return TOK_VOID;
+"int"            return TOK_INT;
+"bool"           return TOK_BOOL;
+"true"           return TOK_TRUE;
+"false"          return TOK_FALSE;
+"if"             return TOK_IF;
+"else"           return TOK_ELSE;
+"while"          return TOK_WHILE;
+"for"            return TOK_FOR;
+"do"             return TOK_DO;
+"print"          return TOK_PRINT;
 
-"+"              TOK_PLUS;
-"-"              TOK_MINUS;
-"*"              TOK_MUL;
-"/"              TOK_DIV;
-"%"              TOK_MOD;
-">"              TOK_GT;
-"<"              TOK_LT;
-"!"              TOK_NOT;
-"~"              TOK_BNOT;
-"&"              TOK_BAND;
-"|"              TOK_BOR;
-"^"              TOK_BXOR;
-"="              TOK_EQ;
-";"              TOK_SEMICOL;
-","              TOK_COMMA;
-"("              TOK_LPAR;
-")"              TOK_RPAR;
-"{"              TOK_LACC;
-"}"              TOK_RACC;
-">>"             TOK_SRL;
-">>>"            TOK_SRA;
-"<<"             TOK_SLL;
-">="             TOK_GE;
-"<="             TOK_LE;
-"=="             TOK_EQ;
-"!="             TOK_NE;
-"&&"             TOK_AND;
-"||"             TOK_OR;
+"+"              return TOK_PLUS;
+"-"              return TOK_MINUS;
+"*"              return TOK_MUL;
+"/"              return TOK_DIV;
+"%"              return TOK_MOD;
+">"              return TOK_GT;
+"<"              return TOK_LT;
+"!"              return TOK_NOT;
+"~"              return TOK_BNOT;
+"&"              return TOK_BAND;
+"|"              return TOK_BOR;
+"^"              return TOK_BXOR;
+"="              return TOK_EQ;
+";"              return TOK_SEMICOL;
+","              return TOK_COMMA;
+"("              return TOK_LPAR;
+")"              return TOK_RPAR;
+"{"              return TOK_LACC;
+"}"              return TOK_RACC;
+">>"             return TOK_SRL;
+">>>"            return TOK_SRA;
+"<<"             return TOK_SLL;
+">="             return TOK_GE;
+"<="             return TOK_LE;
+"=="             return TOK_EQ;
+"!="             return TOK_NE;
+"&&"             return TOK_AND;
+"||"             return TOK_OR;
 
 {IDF} {
                 yylval.strval = strdup(yytext);
@@ -116,7 +116,7 @@ int yywrap(void) {
 
 
 int main(int argc, char ** argv) {
-    node_t program_root;
+    node_t program_root ;
     int hOption=0,voption = 0,traceLvl = 0;
     char* outName = NULL;
     

@@ -116,7 +116,7 @@ vardecl:
 decl:
         ident
         {
-            $$ = make_node(NODE_DECL,1,$1);
+            $$ = make_node(NODE_DECL,2,NULL,$1);
         }
         | ident TOK_AFFECT expr
         {
@@ -129,11 +129,11 @@ ident:
 
 type:
     TOK_INT
-    {$$ = make_node(NODE_TYPE,0);}
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
     | TOK_BOOL
-    {$$ = make_node(NODE_TYPE,0);}
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
     | TOK_VOID
-    {$$ = make_node(NODE_TYPE,0);}
+    {$$ = make_node(NODE_TYPE,2,NULL,NULL);}
 
 paramprint:
         ident
@@ -199,12 +199,11 @@ expr:
     | TOK_INTVAL
     {$$ = make_node(NODE_INTVAL,0);}
     | TOK_TRUE
-    {$$ = make_node(NODE_BOOLVAL,0);}
+    {$$ = make_node(NODE_BOOLVAL,1);}
     | TOK_FALSE
     {$$ = make_node(NODE_BOOLVAL,0);}
     | ident
     { $$ = $1;};
-
 
 block:
     TOK_LACC listdecl listinst TOK_RACC
@@ -250,30 +249,45 @@ listtypedecl:
 %%
 
 /* A completer et/ou remplacer avec d'autres fonctions */
-node_t make_node(node_nature nature, int nops, ...) {
+node_t make_node(node_nature nature, int nops, ...){
 
     va_list ap;
-    int i;
-    node_t node = malloc(sizeof(node_t));
+    int i = 0;
+    node_t node = (node_t) malloc(sizeof(node_s));
+    va_start(ap,nops);
 
-    
-    
+    if(node == NULL)
+    {
+        return NULL;
+    }
+
     node -> nature = nature; // Définition de la nature de la node
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
 
+
+    node -> opr = (node_t*) malloc(nops * sizeof(node_t));
+
+    if(node -> opr == NULL)
+    {
+        return NULL;
+    }
+
+
     if(nops != 0) // On vérifie bien qu'il y ait au moins 1 enfant
     {
+        //node -> opr[0] = va_arg(ap,node_t);
         for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
         {
-            node -> opr[i] = va_arg(ap,node_s*);
+            node -> opr[i] = va_arg(ap,node_t);
         }
 
     }
+ 
     switch(nature)
     {
     case NODE_TYPE:
-        va_start(ap,nops);
+        //va_start(ap,nops);
         node -> type = va_arg(ap,node_type);
         break;
     case NODE_INTVAL:
@@ -283,13 +297,14 @@ node_t make_node(node_nature nature, int nops, ...) {
         node -> ident = strdup(yylval.strval);
         break;
     case NODE_BOOLVAL:
-        va_start(ap,nops);
+        //va_start(ap,nops);
         node -> value = va_arg(ap,int);
         break;
     case NODE_STRINGVAL:
         node -> str = strdup(yylval.strval);
         break;
     }
+    
     va_end(ap);
     return node;
 }
@@ -299,7 +314,7 @@ void analyse_tree(node_t root) {
     dump_tree(root, "apres_syntaxe.dot");
     if (!stop_after_syntax) {
         analyse_passe_1(root);
-        //dump_tree(root, "apres_passe_1.dot");
+        dump_tree(root, "apres_passe_1.dot");
         if (!stop_after_verif) {
             create_program(); 
             gen_code_passe_2(root);
