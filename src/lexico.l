@@ -28,9 +28,9 @@ extern int yydebug;
 
 
 /* A completer ; fausses definitions pour passer la compilation */
-IDF             [a-zA-Z_][a-zA-Z0-9_]+
+IDF             [a-zA-Z_][a-zA-Z0-9_]*
 ENTIER          [0-9]+
-CHAINE          \'*\'
+CHAINE          \".*\"
 LETTRE          [a-zA-Z]
 COMMENTAIRE     \/\/.*
 ENTIER_DEC      [0-9]+
@@ -51,7 +51,6 @@ ENTIER_HEXA     [0-9a-fA-F]+
 "for"            return TOK_FOR;
 "do"             return TOK_DO;
 "print"          return TOK_PRINT;
-
 "+"              return TOK_PLUS;
 "-"              return TOK_MINUS;
 "*"              return TOK_MUL;
