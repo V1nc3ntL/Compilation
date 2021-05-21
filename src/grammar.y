@@ -125,7 +125,7 @@ decl:
 
 ident:
         TOK_IDENT
-        {$$ = make_node(NODE_IDENT,0);};
+        {$$ = make_node(NODE_IDENT,2,NULL,NULL);};
 
 type:
     TOK_INT
@@ -227,7 +227,7 @@ inst:
     | TOK_SEMICOL
     {$$ = NULL;}
     | TOK_PRINT TOK_LPAR listparamprint TOK_RPAR TOK_SEMICOL
-    {$$ = make_node(NODE_PRINT,1,$3);};
+    {$$ = make_node(NODE_PRINT,2,NULL,$3);};
 
 listinstnonnull:
                 inst
@@ -254,7 +254,7 @@ node_t make_node(node_nature nature, int nops, ...){
     va_list ap;
     int i = 0;
     node_t node = (node_t) malloc(sizeof(node_s));
-    va_start(ap,nops);
+    
 
     if(node == NULL)
     {
@@ -265,29 +265,36 @@ node_t make_node(node_nature nature, int nops, ...){
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
 
-
     node -> opr = (node_t*) malloc(nops * sizeof(node_t));
+    
+
+    
 
     if(node -> opr == NULL)
     {
         return NULL;
     }
 
-
-    if(nops != 0) // On vérifie bien qu'il y ait au moins 1 enfant
+    // On vérifie bien qu'il y ait au moins 1 enfant
+    if(nops != 0) 
     {
+        va_start(ap,nops);
+        printf("nops : %d\n",node -> nops);
+        
         //node -> opr[0] = va_arg(ap,node_t);
+        //node -> opr[1] = va_arg(ap,node_t);
         for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
         {
             node -> opr[i] = va_arg(ap,node_t);
         }
 
     }
+    
  
     switch(nature)
     {
     case NODE_TYPE:
-        //va_start(ap,nops);
+        va_start(ap,nops);
         node -> type = va_arg(ap,node_type);
         break;
     case NODE_INTVAL:
@@ -297,7 +304,7 @@ node_t make_node(node_nature nature, int nops, ...){
         node -> ident = strdup(yylval.strval);
         break;
     case NODE_BOOLVAL:
-        //va_start(ap,nops);
+        va_start(ap,nops);
         node -> value = va_arg(ap,int);
         break;
     case NODE_STRINGVAL:
