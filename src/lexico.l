@@ -64,7 +64,7 @@ ENTIER_HEXA     [0-9a-fA-F]+
 "&"              return TOK_BAND;
 "|"              return TOK_BOR;
 "^"              return TOK_BXOR;
-"="              return TOK_EQ;
+"="              return TOK_AFFECT;
 ";"              return TOK_SEMICOL;
 ","              return TOK_COMMA;
 "("              return TOK_LPAR;
