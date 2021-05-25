@@ -257,48 +257,34 @@ node_t make_node(node_nature nature, int nops, ...){
     int i = 0;
     node_t node = (node_t) malloc(sizeof(node_s));
     
-/*
-    if(node == NULL)
-    {
-        return NULL;
-    }
-*/
     node -> nature = nature; // Définition de la nature de la node
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
 
-    
-    
-
-    
-/*
-    if(node -> opr == NULL)
-    {
-        return NULL;
-    }
-*/
     // On vérifie bien qu'il y ait au moins 1 enfant
+
     if(nops != 0) 
     {
         node -> opr = (node_t*) malloc(nops * sizeof(node_t));
         va_start(ap,nops);
-        //printf("nops : %d\n",node -> nops);
-        
-        //node -> opr[0] = va_arg(ap,node_t);
-        //node -> opr[1] = va_arg(ap,node_t);
-        for(i = 0; i < nops; i++) // On met les enfants dans la liste opr
+
+        // On met les enfants dans la liste opr
+
+        for(i = 0; i < nops; i++) 
         {
+            // On cherche le prochain élément dans la liste qui est une node
             node -> opr[i] = va_arg(ap,node_t);
         }
-
     }
+
+    // Si pas d'enfant
 
     else if(nops == 0)
     {
         node -> opr = NULL;
     }
     
- 
+    // On remplie TYPE ou VALUE ou le champ de caractères (IDENT ou STR) suivant le type de node
     switch(nature)
     {
     case NODE_TYPE:
@@ -311,8 +297,8 @@ node_t make_node(node_nature nature, int nops, ...){
         node -> value = yylval.intval;
         break;
     case NODE_IDENT:
-        va_start(ap,nops);
-        node -> type = va_arg(ap,node_type);
+        //va_start(ap,nops);
+        //node -> type = va_arg(ap,node_type); // a faire dans la passe1
         node -> ident = strdup(yylval.strval);
         break;
     case NODE_BOOLVAL:

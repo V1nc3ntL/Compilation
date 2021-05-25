@@ -8,7 +8,6 @@
 #include <inttypes.h>
 #include <unistd.h>
 #include <getopt.h>
-
 #include "defs.h"
 #include "common.h"
 #include "arch.h"
@@ -16,9 +15,9 @@
 
 extern char * infile;
 extern char * outfile;
-int32_t trace_level = DEFAULT_TRACE_LEVEL;
-extern bool stop_after_syntax;
-extern bool stop_after_verif;
+int32_t       trace_level = DEFAULT_TRACE_LEVEL;
+extern bool   stop_after_syntax;
+extern bool   stop_after_verif;
 
 
 void parse_args(int argc, char ** argv) {
@@ -28,8 +27,13 @@ void parse_args(int argc, char ** argv) {
 
 
 
-void free_nodes(node_t n) {
-    // A implementer
+void free_nodes(node_t n)
+{
+    /*for(int i = 0; i < n -> nops; i++) // On free tous les fils d'une node 
+    {
+        free_nodes(n -> opr[i]);
+    }*/
+    free(n);                          // On free la node en question
 }
 
 
