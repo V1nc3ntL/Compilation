@@ -13,7 +13,8 @@ pgm="./minicc"
 for D in `find .  -mindepth 2 -type d  `;do
 
     if [[ "$D" =~ Verif ]];then
-        opt="-v"
+        #opt="-v"
+        opt=""
     elif [[ "$D" =~ Syntaxe ]];then
         opt="-s"
     else
