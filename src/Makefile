@@ -26,7 +26,7 @@ all: minicc
 
 minicc: $(OBJ)
 	@echo "| Linking / Creating binary $@"
-	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) ../$^ -o $@ -lminiccutils;mv $^ ../$^
+	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) ../$^ -o $@ -lminiccutils;mv $@ ../$@
 
 y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
