@@ -81,7 +81,7 @@ ENTIER_HEXA     [0-9a-fA-F]+
 "!="             return TOK_NE;
 "&&"             return TOK_AND;
 "||"             return TOK_OR;
-
+             
 {IDF} {
                 yylval.strval = strdup(yytext);
                 return TOK_IDENT;
@@ -118,11 +118,12 @@ int yywrap(void) {
 
 
 int main(int argc, char ** argv) {
+   
     node_t program_root ;
-    int hOption=0,voption = 0,traceLvl = 0;
+    int traceLvl = 0;
     char* outName = NULL;
     
-    int curArg, code = 0, nRegister = MAX_REG;
+    int curArg , code = 0, nRegister = MAX_REG;
 
     #if YYDEBUG
     yydebug = 1;
