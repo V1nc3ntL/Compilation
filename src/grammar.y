@@ -102,7 +102,7 @@ maindecl:
 listdecl:
         listdeclnonnull
         {
-            $$ = make_node(NODE_LIST,1,$1);
+            $$ = $1;
         }
         |
         {$$ = NULL;};
@@ -116,7 +116,7 @@ vardecl:
 decl:
         ident
         {
-            $$ = make_node(NODE_DECL,1,$1);
+            $$ = $1;
         }
         | ident TOK_AFFECT expr
         {
@@ -125,7 +125,7 @@ decl:
 
 ident:
         TOK_IDENT
-        {$$ = make_node(NODE_IDENT,0,TYPE_STRING);};
+        {$$ = make_node(NODE_IDENT,0);};
 
 type:
     TOK_INT
