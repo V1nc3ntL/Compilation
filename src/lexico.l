@@ -164,6 +164,8 @@ int main(int argc, char ** argv) {
                 code |= R_OPTION;
                 if( (nRegister < MIN_REG) || (nRegister > MAX_REG))   
                     return -1;
+                else
+                    set_max_registers(nRegister);
                 break;
 
             case 's':

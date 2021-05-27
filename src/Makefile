@@ -1,6 +1,7 @@
 
 EXE=minicc
 UTILS=utils
+OBJ_DIR=obj
 
 DEBUG_LEX=1
 DEBUG_YACC=0
@@ -24,7 +25,7 @@ all: minicc
 
 minicc: y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
 	@echo "| Linking / Creating binary $@"
-	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $@ -lminiccutils
+	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $(OBJ_DIR)/$@ -lminiccutils
 
 y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
@@ -36,7 +37,7 @@ lex.yy.c: lexico.l Makefile
 
 lex.yy.o: lex.yy.c
 	@echo "| Compiling $@"
-	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 y.tab.o: y.tab.c
 	@echo "| Compiling $@"
@@ -44,23 +45,23 @@ y.tab.o: y.tab.c
 
 arch.o: arch.c arch.h Makefile
 	@echo "| Compiling $@"
-	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 common.o: common.c common.h arch.h defs.h Makefile
 	@echo "| Compiling $@"
-	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 passe_1.o: passe_1.c passe_1.h defs.h common.h Makefile
 	@echo "| Compiling $@"
-	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 passe_2.o: passe_2.c passe_2.h arch.h defs.h common.h Makefile
 	@echo "| Compiling $@"
-	@gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 clean:
 	@echo "| Cleaning .o files"
-	@rm -f *.o
+	@rm -f $(OBJ_DIR)/*.o
 
 realclean: clean
 	@echo "| Cleaning lex and yacc files, and executable"
