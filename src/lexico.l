@@ -205,8 +205,10 @@ int main(int argc, char ** argv) {
     }else{
         // Fichier est outName;
     }
-
-    yyin = fopen(argv[1], "r");
+    if(!code)
+        yyin = fopen(argv[1], "r");
+    else
+        yyin = fopen(argv[2], "r");
     yyparse(&program_root);
     fclose(yyin);
     analyse_tree(program_root);
