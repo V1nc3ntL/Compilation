@@ -2,10 +2,11 @@
 EXE=minicc
 UTILS=utils
 OBJ_DIR=obj
+OBJ=$(OBJ_DIR)/y.tab.o $(OBJ_DIR)/lex.yy.o $(OBJ_DIR)/arch.o $(OBJ_DIR)/common.o $(OBJ_DIR)/passe_1.o $(OBJ_DIR)/passe_2.o
 
 DEBUG_LEX=1
 DEBUG_YACC=0
-OBJ= $(wildcard obj/*.o)
+
 ifeq ($(DEBUG_YACC),1)
 	YACC_FLAGS=-DYYDEBUG=1
 else
@@ -37,7 +38,7 @@ lex.yy.c: lexico.l Makefile
 
 lex.yy.o: lex.yy.c
 	@echo "| Compiling $@"
-	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
+	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 y.tab.o: y.tab.c
 	@echo "| Compiling $@"
