@@ -2,7 +2,7 @@
 EXE=minicc
 UTILS=utils
 OBJ_DIR=obj
-OBJ=$(OBJ_DIR)/y.tab.o $(OBJ_DIR)/lex.yy.o $(OBJ_DIR)/arch.o $(OBJ_DIR)/common.o $(OBJ_DIR)/passe_1.o $(OBJ_DIR)/passe_2.o
+OBJ=y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
 
 DEBUG_LEX=1
 DEBUG_YACC=0
@@ -26,7 +26,7 @@ all: minicc
 
 minicc: $(OBJ)
 	@echo "| Linking / Creating binary $@"
-	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $@ -lminiccutils
+	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) $^ -o $@ -lminiccutils
 
 y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
@@ -38,7 +38,7 @@ lex.yy.c: lexico.l Makefile
 
 lex.yy.o: lex.yy.c
 	@echo "| Compiling $@"
-	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 y.tab.o: y.tab.c
 	@echo "| Compiling $@"
