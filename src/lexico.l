@@ -143,8 +143,11 @@ int main(int argc, char ** argv) {
 
         switch(curArg){
             case 'b':
-                code |= B_OPTION;
-                break;
+                if(argc > 2)
+                    return 1;
+                else
+                    printf(BANNER);
+                    return 0;
             case 'h':
                 printf(OPTIONS_DESC);
                 return 0;
@@ -168,6 +171,7 @@ int main(int argc, char ** argv) {
                     return -1;
                 else                
                     code |= S_OPTION;
+                    stop_after_syntax = true;
                 break;
 
             case 'v':
@@ -175,6 +179,7 @@ int main(int argc, char ** argv) {
                     return -1;
                 else
                     code |= V_OPTION;
+                    stop_after_verif = true;
                 break;
             
             case 'o':
@@ -187,34 +192,31 @@ int main(int argc, char ** argv) {
         }
     }
 
-    if(code & B_OPTION){
-        printf(BANNER);
-        return 0;
-    }
-
-    if(!(code & S_OPTION)) {
-        //Faire ce qu'il y a après syntaxique analysis
-    }
-
-    if(!(code & V_OPTION)) {
-        //Faire ce qu'il y a après première passe
-    }
-
     if(!(code & O_OPTION)){
-        // Fichier out est DEFAULT_OUTFILE
+        outfile = DEFAULT_OUTFILE;
     }else{
-        // Fichier est outName;
+        outfile = strdup(argv[2]);
     }
     if(!code)
         yyin = fopen(argv[1], "r");
-    else
-        yyin = fopen(argv[2], "r");
+    else {
+        if((code & O_OPTION ) || (code & T_OPTION) || (code & R_OPTION) )
+            yyin = fopen(argv[3], "r");
+        else
+            yyin = fopen(argv[2], "r");
+    }
+    
+
     yyparse(&program_root);
     fclose(yyin);
     analyse_tree(program_root);
     yylex_destroy();
 
-    
+    if(outName != NULL)
+        free(outName);
+    if(outfile != DEFAULT_OUTFILE)
+       free(outfile); 
+
     return 0;
 }
 
