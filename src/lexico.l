@@ -83,7 +83,7 @@ ENTIER_HEXA     [0-9a-fA-F]+
 "||"             return TOK_OR;
              
 {IDF} {
-                yylval.strval = strdup(yytext);
+                yylval.strval = yytext;
                 return TOK_IDENT;
 }
 
