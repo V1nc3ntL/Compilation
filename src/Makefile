@@ -26,7 +26,7 @@ all: minicc
 
 minicc: $(OBJ)
 	@echo "| Linking / Creating binary $@"
-	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) ../$^ -o $@ -lminiccutils;mv $@ ../$@
+	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) $^ -o $@ -lminiccutils;mv $@ ../$@
 
 y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
@@ -62,7 +62,7 @@ passe_2.o: passe_2.c passe_2.h arch.h defs.h common.h Makefile
 
 clean:
 	@echo "| Cleaning .o files"
-	@rm -f $(OBJ_DIR)/*.o
+	@rm -f *.o $(OBJ_DIR)/*.o
 
 realclean: clean
 	@echo "| Cleaning lex and yacc files, and executable"
