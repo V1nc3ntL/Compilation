@@ -28,12 +28,31 @@ void parse_args(int argc, char ** argv) {
 
 
 void free_nodes(node_t n)
-{
-    /*for(int i = 0; i < n -> nops; i++) // On free tous les fils d'une node 
-    {
-        free_nodes(n -> opr[i]);
-    }*/
+{   
+    if(n != NULL){
+        switch(n->nature){
+            case NODE_STRINGVAL :
+                free(n->str);
+                break;
+            case NODE_IDENT:
+                free(n->str);
+                free(n->ident);
+                break;
+            case NODE_PROGRAM:
+                printf("\nHEY");
+            default:
+                break;
+        }
+    
+    if(n->nops){
+        for(int i = 0; i < n -> nops; i++) // On free tous les fils d'une node          
+            free_nodes(n -> opr[i]);
+
+       
+    }
+     free(n->opr);
     free(n);                          // On free la node en question
+    }
 }
 
 
