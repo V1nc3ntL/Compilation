@@ -5,7 +5,7 @@ OBJ_DIR=obj
 
 DEBUG_LEX=1
 DEBUG_YACC=0
-
+OBJ= $(wildcard obj/*.o)
 ifeq ($(DEBUG_YACC),1)
 	YACC_FLAGS=-DYYDEBUG=1
 else
@@ -23,9 +23,9 @@ INCLUDE=-I$(UTILS)
 
 all: minicc
 
-minicc: y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
+minicc: $(OBJ)
 	@echo "| Linking / Creating binary $@"
-	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $(OBJ_DIR)/$@ -lminiccutils
+	@gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) $^ -o $@ -lminiccutils
 
 y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
@@ -41,7 +41,7 @@ lex.yy.o: lex.yy.c
 
 y.tab.o: y.tab.c
 	@echo "| Compiling $@"
-	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $@ -c $<
+	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 arch.o: arch.c arch.h Makefile
 	@echo "| Compiling $@"
