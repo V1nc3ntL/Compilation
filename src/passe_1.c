@@ -4,15 +4,15 @@
 #include "defs.h"
 #include "passe_1.h"
 #include "miniccutils.h"
-
+#include "stdlib.h"
 int trace_level;
 
 
 void analyse_node_ident(node_t n)
 {
 
-	n -> type        = TYPE_STRING;
-	n -> global_decl = true;
+	//n -> type        = TYPE_STRING;
+	
 
 	push_context();
 
@@ -67,6 +67,7 @@ void analyse_passe_1(node_t root)
 		case NODE_PROGRAM:
 			push_global_context();
 			if(root->nops > 1){
+				root -> opr[0]->global_decl = true;
 				analyse_passe_1(root -> opr[0]);
 				analyse_passe_1(root -> opr[1]);
 			}else{
@@ -84,14 +85,26 @@ void analyse_passe_1(node_t root)
 			analyse_passe_1(root -> opr[1]);
 			break;
 		case NODE_DECLS:
-
+			root->decl_node = root;
 			analyse_passe_1(root -> opr[0]);
 			analyse_passe_1(root -> opr[1]);
-			root->opr[0]->type = root->opr[1]->type;
+
 			break;
 		case NODE_DECL:
+			
 			analyse_passe_1(root -> opr[0]);
 			analyse_passe_1(root -> opr[1]);
+
+			if(root->decl_node){
+				if(root->decl_node->type != 
+			 root->opr[1]->type )
+			 	exit(-1);
+				 else{
+					root->opr[0]->type =  root->decl_node->type;
+				 }
+			}
+			else
+				root->opr[0]->type = root->opr[1]->type;
 			break;
 		case NODE_FUNC:
 			analyse_passe_1(root -> opr[0]);
