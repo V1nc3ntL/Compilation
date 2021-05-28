@@ -84,7 +84,7 @@ program:
         }
         | maindecl
         {
-            $$ = make_node(NODE_PROGRAM, 2, NULL,$1);
+            $$ = make_node(NODE_PROGRAM, 1, $1 );
             *program_root = $$;
         }
         ;

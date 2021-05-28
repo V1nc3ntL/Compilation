@@ -45,7 +45,6 @@ void free_nodes(node_t n)
                 break;
         }
     
-
         for(int i = 0; i < n -> nops; i++) // On free tous les fils d'une node          
             free_nodes(n -> opr[i]);
         free(n->opr);

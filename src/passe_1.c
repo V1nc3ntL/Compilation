@@ -5,32 +5,31 @@
 #include "passe_1.h"
 #include "miniccutils.h"
 
-extern int trace_level;
+int trace_level;
 
 
 void analyse_node_ident(node_t n)
 {
-	
 
 	n -> type        = TYPE_STRING;
 	n -> global_decl = true;
 
-	printf("\nn->ident = %s",n->ident);
-	
+	push_context();
+
 	if(n->ident)
 		n -> decl_node   = get_decl_node(n -> ident);
 	
+	
 	if(env_add_element(n -> ident,n) >= 0)
 	{
-		push_context();
 		n -> offset  = add_string(n -> ident);
-		pop_context();
 	}
+
 	else
 	{
 		n -> offset =  get_env_current_offset();
 	}
-	
+	pop_context();
 
 }
 
@@ -66,13 +65,14 @@ void analyse_passe_1(node_t root)
 	{
 
 		case NODE_PROGRAM:
+			push_global_context();
 			if(root->nops > 1){
-				push_global_context();
 				analyse_passe_1(root -> opr[0]);
 				analyse_passe_1(root -> opr[1]);
 			}else{
-				analyse_passe_1(root -> opr[0]);
+				analyse_passe_1(root -> opr[1]);
 			}
+			pop_context();
 			break;
 
 		case NODE_IDENT:
