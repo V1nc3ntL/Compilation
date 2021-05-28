@@ -7,7 +7,7 @@
 #include "common.h"
 #include "argparser.h"
 #include "y.tab.h"
-
+#include "passe_1.h"
 int yyparse(node_t * program_root);
 void analyse_tree(node_t root);
 
@@ -15,7 +15,7 @@ char * infile = NULL;
 char * outfile = DEFAULT_OUTFILE;
 bool stop_after_syntax = false;
 bool stop_after_verif = false;
-
+extern int trace_level;
 #if YYDEBUG
 extern int yydebug;
 #endif
@@ -94,7 +94,7 @@ ENTIER_HEXA     [0-9a-fA-F]+
 
 
 {CHAINE} {
-                yylval.strval = strdup(yytext);
+                yylval.strval = yytext;
                 return TOK_STRING;
 }
 
