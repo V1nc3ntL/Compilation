@@ -25,6 +25,7 @@ INCLUDE=-I$(UTILS)
 all: minicc
 
 minicc: $(OBJ)
+	@mkdir -p obj
 	@echo "| Linking / Creating binary $@"
 	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) $^ -o $@ -lminiccutils;mv $@ ../$@
 
