@@ -158,6 +158,8 @@ int main(int argc, char ** argv) {
                 code |= T_OPTION;
                 if( (traceLvl < MIN_TRACE) || (traceLvl > MAX_TRACE))   
                     return -1;
+                else
+                    trace_level = traceLvl;
                 break;
 
             case 'r':
