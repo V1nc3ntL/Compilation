@@ -37,20 +37,21 @@ void free_nodes(node_t n)
             case NODE_IDENT:
                 free(n->str);
                 free(n->ident);
+                free(n->decl_node);
                 break;
             case NODE_PROGRAM:
-                printf("\nHEY");
+                free(n->decl_node);
             default:
                 break;
         }
     
-    if(n->nops){
+
         for(int i = 0; i < n -> nops; i++) // On free tous les fils d'une node          
             free_nodes(n -> opr[i]);
-    }
-     free(n->opr);
-    free(n);                          // On free la node en question
-    }
+        free(n->opr);
+        free(n);                          // On free la node en question
+        }   
+
 }
 
 
