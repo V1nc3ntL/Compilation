@@ -201,9 +201,9 @@ expr:
     | TOK_INTVAL
     {$$ = make_node(NODE_INTVAL,0,TYPE_INT);}
     | TOK_TRUE
-    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL);}
+    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL,1);}
     | TOK_FALSE
-    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL);}
+    {$$ = make_node(NODE_BOOLVAL,0,TYPE_BOOL,0);}
     | ident
     { $$ = $1;};
 
@@ -322,7 +322,7 @@ node_t make_node(node_nature nature, int nops, ...){
     case NODE_BOOLVAL:
         va_start(ap,nops);
         node->type = va_arg(ap,node_type);
- 
+        node->value = va_arg(ap,node_type);
         break;
     case NODE_STRINGVAL:
         //va_start(ap,nops);

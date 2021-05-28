@@ -84,8 +84,10 @@ void analyse_passe_1(node_t root)
 			analyse_passe_1(root -> opr[1]);
 			break;
 		case NODE_DECLS:
+
 			analyse_passe_1(root -> opr[0]);
 			analyse_passe_1(root -> opr[1]);
+			root->opr[0]->type = root->opr[1]->type;
 			break;
 		case NODE_DECL:
 			analyse_passe_1(root -> opr[0]);
