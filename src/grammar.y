@@ -84,7 +84,7 @@ program:
         }
         | maindecl
         {
-            $$ = make_node(NODE_PROGRAM, 1, $1);
+            $$ = make_node(NODE_PROGRAM, 2, NULL,$1);
             *program_root = $$;
         }
         ;
@@ -256,7 +256,9 @@ node_t make_node(node_nature nature, int nops, ...){
     va_list ap;
     int i = 0;
     node_t node = NULL; 
+  
     node = (node_t) malloc(sizeof(node_s));
+    
     if(node == NULL)
         exit(-1);
 
@@ -265,11 +267,14 @@ node_t make_node(node_nature nature, int nops, ...){
     node -> decl_node = NULL;
     node->ident = NULL;
     node->str = NULL;
-    
+    node->opr = NULL;
+    node->value = 0;
+    node->nops = 0;
+    node->type = TYPE_NONE;
     node -> nature = nature; // Définition de la nature de la node
     node -> lineno = yylineno; // Définit la ligne avec la variable globale
     node -> nops = nops; // On définit le nombre d'opérandes
-    
+    node->node_num = 0;
     
     // On vérifie bien qu'il y ait au moins 1 enfant
 
@@ -297,6 +302,9 @@ node_t make_node(node_nature nature, int nops, ...){
     // On remplit TYPE ou VALUE ou le champ de caractères (IDENT ou STR) suivant le type de node
     switch(nature)
     {
+        case NODE_DECLS:
+         node -> type = va_arg(ap,node_type);
+         break;
     case NODE_TYPE:
         va_start(ap,nops);
         node -> type = va_arg(ap,node_type);
@@ -308,13 +316,13 @@ node_t make_node(node_nature nature, int nops, ...){
         break;
     case NODE_IDENT:
         //va_start(ap,nops);
-        //node -> type = va_arg(ap,node_type); // a faire dans la passe1
         node->ident = strdup(yylval.strval);
         node->nature = NODE_IDENT;
         break;
     case NODE_BOOLVAL:
         va_start(ap,nops);
-        node -> value = va_arg(ap,int);
+        node->type = va_arg(ap,node_type);
+ 
         break;
     case NODE_STRINGVAL:
         //va_start(ap,nops);
@@ -330,10 +338,11 @@ node_t make_node(node_nature nature, int nops, ...){
 
 
 void analyse_tree(node_t root) {
-    //dump_tree(root, "apres_syntaxe.dot");
+    dump_tree(root, "apres_syntaxe.dot");
+    
     if (!stop_after_syntax) {
         analyse_passe_1(root);
-      //  dump_tree(root, "apres_passe_1.dot");
+        dump_tree(root, "apres_passe_1.dot");
         if (!stop_after_verif) {
             create_program(); 
             gen_code_passe_2(root);
@@ -343,6 +352,7 @@ void analyse_tree(node_t root) {
         free_global_strings();
     }
     free_nodes(root);
+
 }
 
 
