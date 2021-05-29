@@ -1,10 +1,10 @@
-int i = 10;
-bool f = true, t = false;
 
+int start = 0;
+int end = 100;
 void main()
 {
-	//
-	int i = 0, s = start, e = end;
+
+	int i, s = start, e = end;
 	int sum = 0 ;
 	for(i = s; i < e ; i = i + 1){
 		sum = sum + i ;

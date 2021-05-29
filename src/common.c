@@ -35,12 +35,9 @@ void free_nodes(node_t n)
                 free(n->str);
                 break;
             case NODE_IDENT:
-                free(n->str);
                 free(n->ident);
-                free(n->decl_node);
+               //free(n->decl_node);
                 break;
-            case NODE_PROGRAM:
-                free(n->decl_node);
             default:
                 break;
         }
