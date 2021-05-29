@@ -1,11 +1,13 @@
 #!/bin/bash
-CompiledPgmName="../src/minicc"
+pgmName="minicc"
+path="../src/"
 #pour chaque fichier de test
 
-if [ ! -f "minicc" ];then 
-
-    cp $CompiledPgmName .
-
+if [ ! -f pgmName ];then 
+    if [ ! -f $path$pgmName ];then 
+       cd $path && make;
+    fi
+    cp $path$pgmName ./$pgmName 
 fi
 
 pgm="./minicc"
