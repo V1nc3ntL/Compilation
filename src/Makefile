@@ -24,6 +24,8 @@ INCLUDE=-I$(UTILS)
 
 all: minicc
 
+fromScratch : realclean minicc
+
 minicc: $(OBJ)
 	@mkdir -p obj
 	@echo "| Linking / Creating binary $@"
