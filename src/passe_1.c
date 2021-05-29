@@ -14,15 +14,16 @@ analyse_node_ident (node_t n)
   int32_t off;
   //n -> type        = TYPE_STRING;
   n->decl_node = get_decl_node (n->ident);
-
+  printf("\n%s\n",n->ident);
+  printf("\n%d\n",n->type);
+ // printf("\n%d\n", n->decl_node->type);
+  
   if (n->decl_node)
     {
 
       n->offset = n->decl_node->offset;
-
-      if (n->type == TYPE_NONE)
-	n->type = n->decl_node->type;
-
+      n->type = n->decl_node->type;
+      
     }
   else
     {
@@ -33,7 +34,7 @@ analyse_node_ident (node_t n)
 	{
 	  add_string (n->ident);
 	  n->offset = off;
-	  //n->offset = 115;
+
 	  //      n->offset = 114;
 	}
       else
@@ -41,8 +42,10 @@ analyse_node_ident (node_t n)
 	  n->offset = n->decl_node->offset;
 
 	  n->type = n->decl_node->type;
+
 	}
     }
+
 }
 
 void
@@ -70,11 +73,10 @@ analyse_node_global_ident (node_t n)
       else
 	{
 	  n->offset = n->decl_node->offset;
-
+	  n->type = n->decl_node->type;
 	}
 
     }
-
 
 
 }
@@ -139,28 +141,35 @@ analyse_global (node_t root)
       analyse_passe_1 (root->opr[1]);
       break;
     case NODE_DECLS:
-      root->decl_node = root;
+
+      root->opr[0]->decl_node = root;
+      root->opr[1]->decl_node = root;
+
       analyse_passe_1 (root->opr[0]);
-      root->opr[1]->type = root->opr[0]->type;
+      root->type = root->opr[0]->type;
       analyse_passe_1 (root->opr[1]);
 
       break;
     case NODE_DECL:
-
-      analyse_passe_1 (root->opr[0]);
-      analyse_passe_1 (root->opr[1]);
-
       if (root->decl_node)
 	{
-	  if (root->decl_node->type != root->opr[1]->type)
+	  if (root->decl_node->type != root->opr[1]->type
+	      || root->decl_node->type != root->opr[0]->type)
 	    exit (-1);
 	  else
 	    {
 	      root->opr[0]->type = root->decl_node->type;
+	      root->opr[1]->type = root->decl_node->type;
 	    }
 	}
       else
-	root->opr[0]->type = root->opr[1]->type;
+	{
+	  root->opr[0]->type = root->opr[1]->type;
+	}
+      analyse_passe_1 (root->opr[0]);
+      analyse_passe_1 (root->opr[1]);
+
+
       break;
     case NODE_FUNC:
 
@@ -225,7 +234,7 @@ analyse_passe_1 (node_t root)
 	}
       else
 	{
-	  analyse_passe_1 (root->opr[1]);
+	  analyse_passe_1 (root->opr[0]);
 	}
       pop_context ();
       break;
@@ -243,27 +252,34 @@ analyse_passe_1 (node_t root)
     case NODE_DECLS:
       root->decl_node = root;
       analyse_passe_1 (root->opr[0]);
-      root->opr[1]->type = root->opr[0]->type;
+      printf("Type est : %d",root->opr[0]->type);
+
+      root->decl_node->type = root->opr[0]->type;
+      
+      root->opr[1]->decl_node = root;
+      root->opr[0]->decl_node = root;
       analyse_passe_1 (root->opr[1]);
 
       break;
     case NODE_DECL:
+     if (root->decl_node)
+	  {
+      printf("J'ai un node decl");
 
+	      root->opr[0]->type = root->decl_node->type;
+	      root->opr[1]->type = root->decl_node->type;
+	    
+	  }
+      else{
+	     exit (-1);
+      }
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1 (root->opr[1]);
-
-      if (root->decl_node)
-	{
-	  if (root->decl_node->type != root->opr[1]->type)
-	    exit (-1);
-	  else
+      if (root->decl_node->type != root->opr[1]->type)
 	    {
-	      root->opr[0]->type = root->decl_node->type;
+	      exit (-1);
 	    }
-	}
-      else
-	root->opr[0]->type = root->opr[1]->type;
-      break;
+     break;
     case NODE_FUNC:
       reset_env_current_offset ();
       push_context ();
