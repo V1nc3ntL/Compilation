@@ -18,7 +18,7 @@ int getStartOffset(node_t root){
 
 
 void r_passe_2(node_t root){
-    int32_t r1 = 0, r2 = 0 , r3 = 0;
+ int32_t r1 = 0, r2 = 0 , r3 = 0;
 
     if(root != NULL){
         switch(root->nature){
@@ -63,16 +63,19 @@ void r_passe_2(node_t root){
                 r_passe_2(root->opr[0]);
                 
                 r_passe_2(root->opr[1]);
+                
                 if(root->opr[1]->nature == NODE_PLUS){
                     r1 = get_current_reg();
                     // Trouver l"adresse donnée
-                    create_inst_sw(r1, r2, r3);
+                    push_temporary(r1);
+
                 }
                 break;
+
             case NODE_PLUS:
 
 
-                r_passe_2(root->opr[0]);
+                
               
                 if(root->opr[0]->nature == NODE_INTVAL){
 
@@ -80,36 +83,62 @@ void r_passe_2(node_t root){
                         allocate_reg();
                         r1 = get_current_reg();
                         create_inst_addiu(r1,r2 , root->opr[0]->value );
-      
+
                     }else{
+
+                        r1 = get_current_reg();
+                        printf("NO MORE REG left son\n");
                         push_temporary(r1);
-                        printf("NO MORE REG");
+                        release_reg();
+                                               
                         //stack allocation
                         //pop_tempora
                     }
                 
                 }
+                 
                 if(root->opr[1]->nature == NODE_INTVAL){
+                    
                     if(reg_available()){
                         allocate_reg();
                         r1 = get_current_reg();
-                        
                         create_inst_addiu(r1,r2 , root->opr[1]->value );
 
                     }else{
+                        r1 = get_current_reg();
                         push_temporary(r1);
-                        printf("NO MORE REG");
+                        release_reg();
+                       // push_temporary(r1);
                         //stack allocation
                     }
-                
+                    
                 }
 
-                r_passe_2(root->opr[1]);
-                r3=get_current_reg();
-                release_reg();
-                r2 = get_current_reg();
-                create_inst_addu(r2,r2,r3);
+               r_passe_2(root->opr[0]);
+      
+                
+                if(reg_available()){            
+                    allocate_reg();
+                    r3=get_current_reg();      
+                    release_reg();
+                    r2 = get_current_reg();
+                     r_passe_2(root->opr[1]);
+                    
+                    create_inst_addu(r2,r3,r2);
+
+                }else{
+                    push_temporary(r1);
+                    r3=get_current_reg();      
+                    release_reg();
+                    r2 = get_current_reg();
+                    r_passe_2(root->opr[1]);
+                    create_inst_addu(r2,r3,r2);
+
+                    pop_temporary(r1);
+                }
+             
                 break;
+
             case NODE_STRINGVAL:
                 create_inst_asciiz(root->ident,root->str);
                 break;
