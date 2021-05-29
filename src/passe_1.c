@@ -14,10 +14,7 @@ analyse_node_ident (node_t n)
   int32_t off;
   //n -> type        = TYPE_STRING;
   n->decl_node = get_decl_node (n->ident);
-  printf("\n%s\n",n->ident);
-  printf("\n%d\n",n->type);
- // printf("\n%d\n", n->decl_node->type);
-  
+
   if (n->decl_node)
     {
 
@@ -252,8 +249,6 @@ analyse_passe_1 (node_t root)
     case NODE_DECLS:
       root->decl_node = root;
       analyse_passe_1 (root->opr[0]);
-      printf("Type est : %d",root->opr[0]->type);
-
       root->decl_node->type = root->opr[0]->type;
       
       root->opr[1]->decl_node = root;
@@ -264,7 +259,6 @@ analyse_passe_1 (node_t root)
     case NODE_DECL:
      if (root->decl_node)
 	  {
-      printf("J'ai un node decl");
 
 	      root->opr[0]->type = root->decl_node->type;
 	      root->opr[1]->type = root->decl_node->type;
