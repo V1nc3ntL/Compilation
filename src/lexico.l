@@ -130,6 +130,9 @@ int main(int argc, char ** argv) {
     #endif
     int i = 0 ;
 
+    if(argc == 1)
+        return -1;
+
     while((curArg=getopt(argc,argv,"botrsvh"))!=-1){
         
         i++;

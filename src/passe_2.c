@@ -15,10 +15,80 @@ int getStartOffset(node_t root){
 	  return root->opr[0]->offset;
 	}
 }
+void plus_inst(node_t root){
 
+     int32_t tmp = 0, r1 = 0, r2 = 0 , r3 = 0;
+
+                if(root->opr[0]->nature == NODE_INTVAL){
+                    tmp = root->opr[0]->value;
+
+                    if(reg_available()){
+                        r1 = get_current_reg();
+                        allocate_reg();
+                    }else{
+                        r1 = get_current_reg();
+                        push_temporary(r1);
+                    }
+                }else{
+                    r_passe_2(root->opr[0]);
+                    tmp = root->opr[0]->value;
+
+                    if(reg_available()){
+                        r1 = get_current_reg();
+                        allocate_reg();
+                    }else{
+                        r1 = get_current_reg();
+                        push_temporary(r1);
+                        
+                    }
+                }
+                create_inst_addiu(r1,0,tmp);
+               
+                
+                if(root->opr[1]->nature == NODE_INTVAL){
+                    tmp = root->opr[1]->value;
+                    if(reg_available()){
+                        allocate_reg();
+                        
+                        r1 = get_current_reg();
+                     
+                        create_inst_addiu(r1,0 , tmp );
+                        
+                    }else{
+                        push_temporary(r1);
+                        create_inst_addiu(r1,0 , tmp);
+
+                        //stack allocation
+                    }
+                    
+                }else{
+                    
+                    r_passe_2(root->opr[1]);
+                    
+                    if(reg_available()){  
+                        r1 = get_current_reg();
+                        allocate_reg();
+                        r2=get_current_reg(); 
+                      
+                        create_inst_addu(r1,r1,r2);
+                        release_reg();
+                    }else{  
+                        r1=get_current_reg();
+                        r3 = get_restore_reg();
+                        pop_temporary(r3);      
+                       
+                        create_inst_addu(r1,r3,r1);
+                        pop_temporary(r3);
+                        
+                        create_inst_addu(r1,r3,r1);    
+                    }
+                  release_reg();
+                }
+               
+}             
 
 void r_passe_2(node_t root){
- int32_t r1 = 0, r2 = 0 , r3 = 0;
+
 
     if(root != NULL){
         switch(root->nature){
@@ -47,96 +117,33 @@ void r_passe_2(node_t root){
                 r_passe_2(root->opr[1]);
                 break;
             case NODE_INTVAL:
-                r3 = root->value;
+                
                 break;
             case NODE_AFFECT:
                 r_passe_2(root->opr[0]);
                 r_passe_2(root->opr[1]);
-                create_inst_sw(r1, r2, r3);
+                //create_inst_sw(r1, r2, r3);
                 break;
             case NODE_DECLS:
                 r_passe_2(root->opr[0]);
                 r_passe_2(root->opr[1]);
                 break;
             case NODE_DECL:
-                //printf("DECL encountered");
+                
                 r_passe_2(root->opr[0]);
                 
                 r_passe_2(root->opr[1]);
-                
-                if(root->opr[1]->nature == NODE_PLUS){
-                    r1 = get_current_reg();
-                    // Trouver l"adresse donnée
-                    push_temporary(r1);
 
+                if(reg_available()){
+                    allocate_reg();
+                    push_temporary(get_current_reg());
                 }
+                    
+                
                 break;
 
             case NODE_PLUS:
-
-
-                
-              
-                if(root->opr[0]->nature == NODE_INTVAL){
-
-                    if(reg_available()){
-                        allocate_reg();
-                        r1 = get_current_reg();
-                        create_inst_addiu(r1,r2 , root->opr[0]->value );
-
-                    }else{
-
-                        r1 = get_current_reg();
-                        printf("NO MORE REG left son\n");
-                        push_temporary(r1);
-                        release_reg();
-                                               
-                        //stack allocation
-                        //pop_tempora
-                    }
-                
-                }
-                 
-                if(root->opr[1]->nature == NODE_INTVAL){
-                    
-                    if(reg_available()){
-                        allocate_reg();
-                        r1 = get_current_reg();
-                        create_inst_addiu(r1,r2 , root->opr[1]->value );
-
-                    }else{
-                        r1 = get_current_reg();
-                        push_temporary(r1);
-                        release_reg();
-                       // push_temporary(r1);
-                        //stack allocation
-                    }
-                    
-                }
-
-               r_passe_2(root->opr[0]);
-      
-                
-                if(reg_available()){            
-                    allocate_reg();
-                    r3=get_current_reg();      
-                    release_reg();
-                    r2 = get_current_reg();
-                     r_passe_2(root->opr[1]);
-                    
-                    create_inst_addu(r2,r3,r2);
-
-                }else{
-                    push_temporary(r1);
-                    r3=get_current_reg();      
-                    release_reg();
-                    r2 = get_current_reg();
-                    r_passe_2(root->opr[1]);
-                    create_inst_addu(r2,r3,r2);
-
-                    pop_temporary(r1);
-                }
-             
+                plus_inst(root);
                 break;
 
             case NODE_STRINGVAL:
