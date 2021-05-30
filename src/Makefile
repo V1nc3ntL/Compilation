@@ -63,7 +63,7 @@ passe_2.o: passe_2.c passe_2.h arch.h defs.h common.h Makefile
 	@echo "| Compiling $@"
 	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
-instBuffer.o:  instBuffer.c instBuffer.h defs.h
+instBuffer.o:  instBuffer.c instBuffer.h defs.h Makefile
 	@echo "| Compiling $@"
 	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 clean:
