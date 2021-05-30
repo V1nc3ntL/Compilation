@@ -7,20 +7,19 @@
 #include "stdlib.h"
 int trace_level;
 
-
 void
 analyse_node_ident (node_t n)
 {
   int32_t off;
   //n -> type        = TYPE_STRING;
   n->decl_node = get_decl_node (n->ident);
-
+  
+         
   if (n->decl_node)
     {
-
       n->offset = n->decl_node->offset;
       n->type = n->decl_node->type;
-      
+
     }
   else
     {
@@ -31,16 +30,17 @@ analyse_node_ident (node_t n)
 	{
 	  add_string (n->ident);
 	  n->offset = off;
-
-	  //      n->offset = 114;
 	}
       else
 	{
+ 
+        
 	  n->offset = n->decl_node->offset;
 
 	  n->type = n->decl_node->type;
 
 	}
+  
     }
 
 }
@@ -58,7 +58,7 @@ analyse_node_global_ident (node_t n)
     {
       n->offset = n->decl_node->offset;
       n->type = n->decl_node->type;
-
+ 
     }
   else
     {
@@ -69,6 +69,7 @@ analyse_node_global_ident (node_t n)
 	}
       else
 	{
+
 	  n->offset = n->decl_node->offset;
 	  n->type = n->decl_node->type;
 	}
@@ -142,12 +143,16 @@ analyse_global (node_t root)
       root->opr[0]->decl_node = root;
       root->opr[1]->decl_node = root;
 
+      
       analyse_passe_1 (root->opr[0]);
       root->type = root->opr[0]->type;
       analyse_passe_1 (root->opr[1]);
 
       break;
     case NODE_DECL:
+    
+          
+    
       if (root->decl_node)
 	{
 	  if (root->decl_node->type != root->opr[1]->type
@@ -246,7 +251,8 @@ analyse_passe_1 (node_t root)
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1 (root->opr[1]);
       break;
-    case NODE_DECLS:
+    case NODE_DECLS:   
+      
       root->decl_node = root;
       analyse_passe_1 (root->opr[0]);
       root->decl_node->type = root->opr[0]->type;
@@ -257,6 +263,8 @@ analyse_passe_1 (node_t root)
 
       break;
     case NODE_DECL:
+    
+
      if (root->decl_node)
 	  {
 
@@ -264,13 +272,11 @@ analyse_passe_1 (node_t root)
 	      root->opr[1]->type = root->decl_node->type;
 	    
 	  }
-      else{
-	     exit (-1);
-      }
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1 (root->opr[1]);
       if (root->decl_node->type != root->opr[1]->type)
 	    {
+        printf("\nError line %d: wrong type assignment",root->lineno,root->ident);
 	      exit (-1);
 	    }
      break;

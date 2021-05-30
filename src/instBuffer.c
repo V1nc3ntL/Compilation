@@ -8,7 +8,7 @@ buffer* buf = NULL;
 void allocateArg(inst* i,int32_t a,int32_t b,int32_t c){
        
 
-            i -> nArg = 3;
+        i -> nArg = 3;
 
         i -> arg = (int32_t*)malloc(3*sizeof(int32_t));
         i -> arg[0] = a;

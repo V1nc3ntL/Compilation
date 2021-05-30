@@ -106,11 +106,47 @@ void plus_inst(node_t root){
                         addToInstBuffer(a,r1,r3,r1);
                     }
                 }
-}             
+}            
+
+
+void r_passe_2_print(node_t root){
+  instWoutArg a;
+
+                
+    
+    
+                 if(root != NULL){
+        switch(root->nature){
+            case NODE_LIST:
+                r_passe_2_print(root->opr[0]);
+                r_passe_2_print(root->opr[1]);
+                printf("list");
+                break;
+            case NODE_STRINGVAL :
+                printf("stringval");  
+                // Traduire 
+                create_inst_asciiz(NULL,root->str);
+      
+                a.tre = create_inst_lw;
+                addToInstBuffer(a,4,root->offset,29);     
+                break;
+            case NODE_IDENT :
+               
+                a.tre = create_inst_lw;
+                addToInstBuffer(a,4,root->offset,29);     
+                printf("ident");
+                // Traduire le chiffre
+                break;
+        }
+    }
+
+                a.tre = create_inst_addiu;
+                addToInstBuffer(a,2,0,4);
+}
 
 void r_passe_2(node_t root){
  instWoutArg a;
-
+int32_t label;
     if(root != NULL){
         switch(root->nature){
             case NODE_PROGRAM:
@@ -124,9 +160,6 @@ void r_passe_2(node_t root){
                 }
                 break;
             case NODE_FUNC :
-                
-                
-
                 r_passe_2(root->opr[1]);
                 r_passe_2(root->opr[2]);
                 r_passe_2(root->opr[0]);
@@ -136,6 +169,7 @@ void r_passe_2(node_t root){
                 create_inst_stack_deallocation(root->offset + get_temporary_max_offset());
                 break;
             case NODE_IDENT:
+             
                 break;
             case NODE_BLOCK:
                 r_passe_2(root->opr[0]);
@@ -154,6 +188,7 @@ void r_passe_2(node_t root){
                 r_passe_2(root->opr[1]);
                 break;
             case NODE_DECL:
+        
                 r_passe_2(root->opr[0]);
                 r_passe_2(root->opr[1]);
 
@@ -166,7 +201,6 @@ void r_passe_2(node_t root){
             case NODE_PLUS:
                 plus_inst(root);
                 break;
-
             case NODE_STRINGVAL:
                 create_inst_asciiz(NULL,root->str);
                 break;
@@ -175,9 +209,13 @@ void r_passe_2(node_t root){
                 r_passe_2(root->opr[1]);
                 break;
             case NODE_PRINT:
-                r_passe_2(root->opr[0]);
+                label = get_new_label();
+                create_inst_label(label);
+                r_passe_2_print(root->opr[0]);
                 if(root->nops > 1)
-                  r_passe_2(root->opr[1]);
+                  r_passe_2_print(root->opr[1]);
+                 
+           
             default:
              //   r_passe_2(root->opr[0]);
                
@@ -209,6 +247,7 @@ void gen_code_passe_2(node_t root) {
     
     r_passe_2(root);
     
+    create_inst_addiu(2,0,10);
 
     
 }
