@@ -2,9 +2,9 @@
 EXE=minicc
 UTILS=utils
 OBJ_DIR=obj
-OBJ=y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o
+OBJ=y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o instBuffer.o
 
-DEBUG_LEX=1
+DEBUG_LEX=0
 DEBUG_YACC=0
 
 ifeq ($(DEBUG_YACC),1)
@@ -63,6 +63,9 @@ passe_2.o: passe_2.c passe_2.h arch.h defs.h common.h Makefile
 	@echo "| Compiling $@"
 	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
+instBuffer.o:  instBuffer.c defs.h instBuffer.h 
+	@echo "| Compiling $@"
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 clean:
 	@echo "| Cleaning .o files"
 	@rm -f *.o $(OBJ_DIR)/*.o
