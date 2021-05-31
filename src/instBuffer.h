@@ -4,11 +4,13 @@
 typedef void (*inst3Member)(int32_t,int32_t,int32_t);
 typedef void (*inst2Member)(int32_t,int32_t);
 typedef void (*inst1Member)(int32_t);
+typedef void (*inst0Member)();
 
 typedef union {
     inst3Member tre;
     inst2Member duo;
     inst1Member uno;
+    inst0Member zer;
 }instWoutArg;
 
 typedef struct{
