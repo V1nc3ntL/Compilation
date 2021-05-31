@@ -50,8 +50,7 @@ for D in `find .  -mindepth 2 -type d  `;do
                     ((failedTest=failedTest+1));
                     echo "$f" not passed
                 fi
-               # rm results;
-               exit
+                rm results;
             done
         else 
             for f in $D/*$tstExtension; do        
