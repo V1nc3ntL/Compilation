@@ -288,18 +288,6 @@ void r_passe_2(node_t root){
                     addToInstBuffer(a,r1, 0x1001,0);    
                     a.tre = create_inst_addiu;
                     addToInstBuffer(a,r1,r1,root->opr[0]->offset-4);
-                    if(reg_available()){
-                        allocate_reg();
-                        r2 = get_current_reg();
-
-                        a.tre = create_inst_addiu;
-                        addToInstBuffer(a,r2,0,root->opr[1]->value) ;
-                        a.tre = create_inst_sw;
-                        addToInstBuffer(a,r2,0,r1);
-                        release_reg();
-                    }
-
-
                     release_reg();
                 }
               
