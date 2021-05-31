@@ -72,7 +72,6 @@ void plus_inst(node_t root){
             if(reg_available()){
 
                 r2 = get_current_reg();
-                printf("tmp is %d",tmp);
                 a.tre = create_inst_addiu;
                 addToInstBuffer(a,r2,0,tmp);
                 release_reg();
@@ -188,32 +187,17 @@ void r_passe_2_print(node_t root){
                 break;
             case NODE_IDENT :
                
-               /* a.tre = create_inst_lw;
-                addToInstBuffer(a,4,root->offset,29);     */
-                //printf("ident");
-                // Traduire le chiffre
-                if(root->decl_node->type = TYPE_INT){
+               
                     // Récupérer la valeur dans un registre
-                     if(reg_available()){
-                    
-                    allocate_reg();
                     r1 = get_current_reg();
-                    a.duo = create_inst_lui;
-                    addToInstBuffer(a,r1, 0x1001,0);    
-                    a.tre = create_inst_addiu;
-                    addToInstBuffer(a,r1,r1,root->decl_node->offset-4);
-                    
                     a.tre = create_inst_lw;
-                    addToInstBuffer(a,4,0,r1);
-
+                    addToInstBuffer(a,4,root->offset-4,r1);
                     a.tre = create_inst_addiu;
                     addToInstBuffer(a,2,0,1);
                     // Mettre la valeur a afficher dans le syscall
                     a.zer =  create_inst_syscall;
                     addToInstBuffer(a,0,0,0);
-                    release_reg();
-                    }
-                }
+              
                 
                 break;
         }
@@ -272,31 +256,34 @@ void r_passe_2(node_t root){
                 break;
             case NODE_DECL:
 
-                
                 varDecl++;
-               
-                // Si la variable est une déclaration initialisé
+                // Si la variable est une déclaration initialisée
                 if( root->opr[1]->nature == NODE_INTVAL &&
                     root->opr[0]->nature == NODE_IDENT){
-
                     create_inst_word(root->opr[0]->ident,root->opr[1]->value);
-                    
                 }
                 else{
-                    if(root->opr[0]->nature == NODE_IDENT)
-                    create_inst_word(root->opr[0]->ident,0);
-                    r_passe_2(root->opr[0]);
-                    r_passe_2(root->opr[1]);
-                }
-                 
-               
-               /*r1 = get_current_reg();
-                    a.duo = create_inst_lui;
-                    addToInstBuffer(a,r1, 0x1001,0);    
-                    a.tre = create_inst_addiu;
-                    addToInstBuffer(a,r1,r1,root->opr[0]->offset);
-                    a.tre = create_inst_sw;
-                    addToInstBuffer(a,r1,0,r1);  *//*
+                    create_inst_word(root->opr[0]->ident,root->opr[1]->value);
+                    
+                    if( root->opr[1]->nature == NODE_PLUS &&
+                        root->opr[0]->nature == NODE_IDENT  ){
+                        r_passe_2(root->opr[0]);
+                        r_passe_2(root->opr[1]);
+                        r1 = get_current_reg();
+                        if(reg_available()){
+                            allocate_reg();
+                            r2 = get_current_reg();
+                            a.duo = create_inst_lui;
+                            addToInstBuffer(a,r2, 0x1001,0);    
+                            
+                            a.tre = create_inst_sw;
+                            addToInstBuffer(a,r1,root->opr[0]->offset-4,r2);
+
+                        }else{
+                        }
+                    }
+                }  
+               /*  *//*
                 // Retrouver l'adresse de data
                
                     
@@ -305,9 +292,6 @@ void r_passe_2(node_t root){
                     
                     release_reg();
                 }*/
-              
-
-                 
                 break;
             case NODE_PLUS:
                 plus_inst(root);
@@ -322,6 +306,7 @@ void r_passe_2(node_t root){
             case NODE_PRINT:
 
                 r_passe_2_print(root->opr[0]);
+
                 if(root->nops > 1)
                   r_passe_2_print(root->opr[1]);
                  
@@ -405,17 +390,8 @@ void gen_code_passe_2(node_t root) {
     
     int32_t offset = getStartOffset(root); 
     int32_t tmpOffset;
-    set_temporary_start_offset(offset);
-    /*
     
-        create_inst_data_sec();
-	  return root->opr[1]->offset;
-	}
-      else
-	{
-	  return root->opr[0]->offset;
-	}
-    */
+    set_temporary_start_offset(offset);
 
     create_inst_data_sec();
 
