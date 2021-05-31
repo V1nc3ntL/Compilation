@@ -272,24 +272,39 @@ void r_passe_2(node_t root){
                 break;
             case NODE_DECL:
 
-
-                r_passe_2(root->opr[0]);
-                r_passe_2(root->opr[1]);
-                // Sauvegarde un esspace pour les variables
-                create_inst_word(root->opr[0]->ident,root->opr[0]->value);
-                varDecl++;
                 
-                // Retrouver l'adresse de data
-                if(reg_available()){
+                varDecl++;
+               
+                // Si la variable est une déclaration initialisé
+                if( root->opr[1]->nature == NODE_INTVAL &&
+                    root->opr[0]->nature == NODE_IDENT){
+
+                    create_inst_word(root->opr[0]->ident,root->opr[1]->value);
                     
-                    allocate_reg();
-                    r1 = get_current_reg();
+                }
+                else{
+                    if(root->opr[0]->nature == NODE_IDENT)
+                    create_inst_word(root->opr[0]->ident,0);
+                    r_passe_2(root->opr[0]);
+                    r_passe_2(root->opr[1]);
+                }
+                 
+               
+               /*r1 = get_current_reg();
                     a.duo = create_inst_lui;
                     addToInstBuffer(a,r1, 0x1001,0);    
                     a.tre = create_inst_addiu;
-                    addToInstBuffer(a,r1,r1,root->opr[0]->offset-4);
+                    addToInstBuffer(a,r1,r1,root->opr[0]->offset);
+                    a.tre = create_inst_sw;
+                    addToInstBuffer(a,r1,0,r1);  *//*
+                // Retrouver l'adresse de data
+               
+                    
+                    allocate_reg();
+                    
+                    
                     release_reg();
-                }
+                }*/
               
 
                  
