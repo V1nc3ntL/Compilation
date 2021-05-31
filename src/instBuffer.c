@@ -5,15 +5,16 @@
 
 buffer* buf = NULL;
 
-void allocateArg(inst* i,int32_t a,int32_t b,int32_t c){
+void allocateArg(inst* in,int32_t a,int32_t b,int32_t c){
        
+        int32_t args[3] = {a,b,c};
 
-        i -> nArg = 3;
+        in->nArg = 3;
+        in -> arg = (int32_t*)malloc(in->nArg*sizeof(int32_t));
 
-        i -> arg = (int32_t*)malloc(3*sizeof(int32_t));
-        i -> arg[0] = a;
-        i -> arg[1] = b;
-        i -> arg[2] = c;
+
+        for(int i = 0 ; i < in->nArg; in->arg[i] = args[i], i++ );
+
        
 }
 
@@ -54,17 +55,16 @@ void releaseInstBuffer(){
             case 3:
             (buf -> bf[i]->in.tre)( buf -> bf[i]->arg[0],buf -> bf[i]->arg[1],buf -> bf[i]->arg[2]) ;
                 break;
+            case 0:
+                 (buf -> bf[i]->in.zer);
             default:
                 exit(-1);
         }
-
-        free(buf -> bf[i]->arg);
+        if(buf -> bf[i] -> nArg)
+            free(buf -> bf[i]->arg);
         free(buf -> bf[i]);
     }
     free(buf->bf);
-   
 
     free(buf);
-
-
 }
