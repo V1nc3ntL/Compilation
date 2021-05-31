@@ -77,6 +77,7 @@ void plus_inst(node_t root){
                 addToInstBuffer(a,r2,0,tmp);
                 release_reg();
                 allocated--;
+                r1 = get_current_reg();
                 a.tre = create_inst_addu;
                 addToInstBuffer(a,r1,r1,r2);
                 
@@ -111,7 +112,7 @@ void plus_inst(node_t root){
             r2 = get_current_reg();
             a.tre = create_inst_addu;
             addToInstBuffer(a,r1,r1,r2);
-*/
+    */
         
 
         for(int i = allocated; i > 0;release_reg(), --i);
@@ -148,10 +149,10 @@ void plus_inst(node_t root){
 int paramPrintAddr = 0;
 
 void r_passe_2_print(node_t root){
-  instWoutArg a;
-int32_t r1 = 0;
+    instWoutArg a;
+    int32_t r1 = 0;
             
-                 if(root != NULL){
+    if(root != NULL){
         switch(root->nature){
             case NODE_LIST:
                 r_passe_2_print(root->opr[0]);
@@ -191,7 +192,7 @@ int32_t r1 = 0;
                 addToInstBuffer(a,4,root->offset,29);     */
                 //printf("ident");
                 // Traduire le chiffre
-                if(root->type = TYPE_INT){
+                if(root->decl_node->type = TYPE_INT){
                     // Récupérer la valeur dans un registre
                      if(reg_available()){
                     
