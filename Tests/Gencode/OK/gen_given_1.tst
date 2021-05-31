@@ -2,5 +2,5 @@ void
 main ()
 {
   int i = 1 + (2 + (3 + (4 + 5)));
-  print ("i ", i, "\n");
+  print ("i", i, "\n");
 }

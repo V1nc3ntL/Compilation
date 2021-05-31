@@ -4,8 +4,10 @@
 #include "passe_2.h"
 #include "miniccutils.h"
 #include "instBuffer.h"
-#define ALIGN(a) ( a % 4 ? a - a % 4 + 4 : a )
+#include <string.h>
+#define ALIGN(a) ( a % 4 ? a - a % 4 + 4 : a)
 
+int wreckOffset=0;
 int getStartOffset(node_t root){
     if (root->nops > 1)
 	{
@@ -112,32 +114,34 @@ void plus_inst(node_t root){
                 }
 }            
 
+int paramPrintAddr = 0;
 
 void r_passe_2_print(node_t root){
   instWoutArg a;
 int32_t r1 = 0;
-                
-    
-    
+            
                  if(root != NULL){
         switch(root->nature){
             case NODE_LIST:
                 r_passe_2_print(root->opr[0]);
                 r_passe_2_print(root->opr[1]);
-                printf("list");
+                //printf("list");
                 break;
             case NODE_STRINGVAL :
-                printf("stringval");  
+                //printf("stringval");  
                 // Traduire 
                 create_inst_asciiz(NULL,root->str);
+                
                 // Retrouver l'adresse de data
                 a.duo = create_inst_lui;
- 
                 addToInstBuffer(a,4, 0x1001,0);    
-            
-                a.tre = create_inst_addiu;
+
                 // Incrémenter l'adresse de data selon l'offset
-                addToInstBuffer(a,4,4,(ALIGN(root->offset))-4);    
+                if(!wreckOffset){
+                    wreckOffset = root->offset;
+                }
+                a.tre = create_inst_addiu;
+                addToInstBuffer(a,4,4,root->offset-wreckOffset );                    
                 /*
                 // Charger l'adresse dans le syscall
                 a.tre = create_inst_addu;
@@ -154,7 +158,7 @@ int32_t r1 = 0;
                
                 a.tre = create_inst_lw;
                 addToInstBuffer(a,4,root->offset,29);     
-                printf("ident");
+                //printf("ident");
                 // Traduire le chiffre
                 break;
         }
@@ -192,7 +196,7 @@ int32_t label;
                 create_inst_syscall();
                 break;
             case NODE_IDENT:
-             
+               // create_inst_word(root->ident,root->value);
                 break;
             case NODE_BLOCK:
                 r_passe_2(root->opr[0]);
