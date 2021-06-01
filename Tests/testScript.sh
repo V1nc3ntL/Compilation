@@ -3,22 +3,25 @@ pgmName="minicc"
 path="../src/"
 marsPath="../tools/Mars_4_2.jar nc np"
 marsCmd="java -jar"
+tstPath="../Tests"
 fst=""
 tstExtension=".tst"
 rstExtension=".rst"
-tstPath="../Tests"
 #pour chaque fichier de test
 failedTest=0
 passedTest=0
 totalTest=0
+tstFailed=""
+pgm="./minicc"
+
 if [ ! -f pgmName ];then 
     if [ ! -f $path$pgmName ];then 
-       cd $path && make && cd $testPath;
+       cd $path && make && cd $tstPath;
     fi
     cp $path$pgmName ./$pgmName 
 fi
 
-pgm="./minicc"
+
 
 for D in `find .  -mindepth 2 -type d  `;do
 
@@ -49,6 +52,7 @@ for D in `find .  -mindepth 2 -type d  `;do
                     echo "$f" passed
                 else
                     ((failedTest=failedTest+1));
+                    tstFailed+="\t${f}\n"
                     echo "$f" not passed
                 fi
                 rm results;
@@ -69,6 +73,7 @@ for D in `find .  -mindepth 2 -type d  `;do
                     ((passedTest=passedTest+1));
                     echo "$f" passed
                 else
+                    tstFailed+="\t${f}\n"
                     ((failedTest=failedTest+1));
                     echo "$f" not passed
                 fi
@@ -79,6 +84,7 @@ for D in `find .  -mindepth 2 -type d  `;do
                 ((totalTest=totalTest+1));
                 $pgm $opt $f
                 if [ $? -eq 0 ];then
+                    tstFailed+="\t${f}\n"
                     ((failedTest=failedTest+1));
                     echo "$f" passed but should not                
                 else
@@ -91,3 +97,7 @@ for D in `find .  -mindepth 2 -type d  `;do
 done
 echo -e "\t\t|\ttotal\t|\tfailed \t|\tpassed\t|"
 echo -e "\t\t|\t"$((totalTest))"\t|\t"$((failedTest))"\t|\t"$((passedTest))"\t|"
+echo -e "\n Failed tests are :"
+echo -e $tstFailed
+
+
