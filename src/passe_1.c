@@ -109,8 +109,8 @@ void analyse_global (node_t root)
 
     case NODE_LIST:
 
-      root -> opr[0]-> type  = root->type;
-      root -> opr[1] -> type = root->type;
+      root -> opr[0] -> type  = root -> type;
+      root -> opr[1] -> type  = root -> type;
       analyse_passe_1 (root -> opr[0]);
       analyse_passe_1 (root -> opr[1]);
       break;
@@ -237,6 +237,15 @@ void analyse_passe_1 (node_t root)
 
       root -> opr[0] -> type = root -> type;
       root -> opr[1] -> type = root -> opr[0] -> type;
+      if(root -> opr[0] -> nature == NODE_STRINGVAL)
+      {
+        root -> opr[0] -> type = TYPE_STRING;
+      }
+      else if(root -> opr[1] -> nature == NODE_STRINGVAL)
+      {
+        root -> opr[1] -> type = TYPE_STRING;
+      }
+
       analyse_passe_1(root -> opr[0]);
       analyse_passe_1(root -> opr[1]);
       break;
