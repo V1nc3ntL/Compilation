@@ -22,12 +22,15 @@ endif
 CFLAGS=-O0 -g -std=c99 -DYY_NO_LEAKS -Wno-implicit-function-declaration
 INCLUDE=-I$(UTILS)
 
-all: minicc
+all: | $(OBJ_DIR) minicc
 
 fromScratch : realclean minicc
 
+$(OBJ_DIR):
+	@mkdir $(OBJ_DIR)
+
+
 minicc: $(OBJ)
-	@mkdir -p obj
 	@echo "| Linking / Creating binary $@"
 	@cd obj/;gcc $(CFLAGS) $(INCLUDE) -L../$(UTILS) $^ -o $@ -lminiccutils;mv $@ ../$@
 
