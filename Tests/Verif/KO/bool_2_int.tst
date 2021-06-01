@@ -1,2 +1,5 @@
 int a = 0;
-bool b = a ;
+bool b  ;
+void main(){
+    b = a ;
+}

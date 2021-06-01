@@ -4,12 +4,12 @@ int end = 100;
 bool next = true;
 void main()
 {
-    sum = start;
+    int sum = start;
 
     while(next){
         sum = sum + i;
         if(sum > end){
-            next = false
+            next = false;
         }
     }
 	print("sum: ",sum,"\n");
