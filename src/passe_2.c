@@ -25,22 +25,22 @@ void plus_inst(node_t root){
     
     instWoutArg a;
     int allocated = 0;
-
+    bool pushed = 0;
     int32_t tmp = 0, r1 = 0, r2 = 0 , r3 = 0;
 
         if(root->opr[0]->nature == NODE_INTVAL){
 
             tmp = root->opr[0]->value;
-            
+            r1 = get_current_reg();
             if(reg_available()){
                 
-                r1 = get_current_reg();
                 allocate_reg();
                 allocated++;
                 a.tre = create_inst_addiu;
                 addToInstBuffer(a,r1,0,tmp);                        
             }else{
-                /*r1 = get_current_reg();
+
+                /*
                 a.uno = push_temporary;
                 addToInstBuffer(a,r1,0,0);
                 release_reg();*/
@@ -81,13 +81,15 @@ void plus_inst(node_t root){
                 addToInstBuffer(a,r1,r1,r2);
                 
             }else{
-              
-            /*
+                pushed = true;
+                allocated--;
+                release_reg();
+                r1 = get_current_reg();
                 a.uno = push_temporary;
                 addToInstBuffer(a,r1,0,0);
                 a.tre = create_inst_addiu;
                 addToInstBuffer(a,r1,0,tmp);
-                release_reg();*/
+                
             }
               
         }else{
@@ -113,36 +115,15 @@ void plus_inst(node_t root){
             addToInstBuffer(a,r1,r1,r2);
     */
         
-
+        if(pushed){
+                pushed = true;
+                a.uno = pop_temporary;
+                addToInstBuffer(a,get_restore_reg(),0,0);
+                r1 = get_current_reg();
+                a.tre = create_inst_addu;
+                addToInstBuffer(a,r1,r1,get_restore_reg());
+        }
         for(int i = allocated; i > 0;release_reg(), --i);
-         
-        /*else{
-
-            if(reg_available()){
-            
-                r1 = get_current_reg();
-                allocate_reg(); 
-                r2=get_current_reg();    
-                a.tre = create_inst_addu;
-                addToInstBuffer(a,r2,r2,r1);
-                r1 = get_current_reg();
-                addToInstBuffer(a,r2,r2,r1);
-                release_reg(); 
-            }else{  
-                
-                r1=get_current_reg();
-                r3 = get_restore_reg(); 
-
-                a.uno = pop_temporary;
-                addToInstBuffer(a,r3,0,0); 
-
-                a.tre = create_inst_addu;
-                addToInstBuffer(a,r1,r3,r1);
-
-                a.uno = pop_temporary;
-                addToInstBuffer(a,r3,0,0);
-            }
-        } */ 
 }            
 
 int paramPrintAddr = 0;
@@ -156,23 +137,23 @@ void r_passe_2_print(node_t root){
             case NODE_LIST:
                 r_passe_2_print(root->opr[0]);
                 r_passe_2_print(root->opr[1]);
-                //printf("list");
                 break;
             case NODE_STRINGVAL : 
-                // Traduire 
                 create_inst_asciiz(NULL,root->str);
-                
                 // Retrouver l'adresse de data
                 a.duo = create_inst_lui;
                 addToInstBuffer(a,4, 0x1001,0);    
-
+                
+                a.tre = create_inst_addiu;
                 // Incrémenter l'adresse de data selon l'offset
                 if(!wreckOffset){
                     wreckOffset = root->offset;
+                    addToInstBuffer(a,4,4,varDecl<<2);
+                }else{
+                    addToInstBuffer(a,4,4,root->offset-wreckOffset+(varDecl<<2));  
                 }
-                a.tre = create_inst_addiu;
-                addToInstBuffer(a,4,4,root->offset-wreckOffset+(varDecl<<2) );  
-
+                
+                
                 /*
                 // Charger l'adresse dans le syscall
                 a.tre = create_inst_addu;
@@ -186,24 +167,22 @@ void r_passe_2_print(node_t root){
                 addToInstBuffer(a,0,0,0);
                 break;
             case NODE_IDENT :
-               
-               
                     // Récupérer la valeur dans un registre
                     r1 = get_current_reg();
                     a.tre = create_inst_lw;
-                    addToInstBuffer(a,4,root->offset-4,r1);
+                    if(root->type == TYPE_INT)
+                        addToInstBuffer(a,4,root->decl_node->offset-4,r1);
+                    else{
+                        addToInstBuffer(a,4,root->decl_node->offset,r1);
+                    }
                     a.tre = create_inst_addiu;
                     addToInstBuffer(a,2,0,1);
                     // Mettre la valeur a afficher dans le syscall
                     a.zer =  create_inst_syscall;
                     addToInstBuffer(a,0,0,0);
-              
-                
                 break;
         }
-    }
-
-          
+    }   
 }
 
 void r_passe_2(node_t root){
@@ -226,9 +205,9 @@ void r_passe_2(node_t root){
 
                 break;
             case NODE_FUNC :
+                r_passe_2(root->opr[0]);
                 r_passe_2(root->opr[1]);
                 r_passe_2(root->opr[2]);
-                r_passe_2(root->opr[0]);
                 create_inst_text_sec();
                 create_inst_stack_allocation();
                 releaseInstBuffer();
@@ -275,10 +254,8 @@ void r_passe_2(node_t root){
                             r2 = get_current_reg();
                             a.duo = create_inst_lui;
                             addToInstBuffer(a,r2, 0x1001,0);    
-                            
                             a.tre = create_inst_sw;
                             addToInstBuffer(a,r1,root->opr[0]->offset-4,r2);
-
                         }else{
                         }
                     }
