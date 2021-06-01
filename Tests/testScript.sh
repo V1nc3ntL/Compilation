@@ -21,8 +21,6 @@ if [ ! -f pgmName ];then
     cp $path$pgmName ./$pgmName 
 fi
 
-
-
 for D in `find .  -mindepth 2 -type d  `;do
 
     if [[ "$D" =~ Verif ]];then
