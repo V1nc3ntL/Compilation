@@ -205,3 +205,90 @@ void moins_inst(node_t root){
         }
         for(int i = allocated; i > 0;release_reg(), --i);
 }      
+
+void mul_inst(node_t root){
+
+    instWoutArg a;
+    int allocated = 0;
+    bool pushed = 0;
+    int32_t tmp = 0, r1 = 0, r2 = 0 , r3 = 0;
+
+        if(root->opr[0]->nature == NODE_INTVAL){
+
+            tmp = root->opr[0]->value;
+            r1 = get_current_reg();
+            if(reg_available()){
+                allocate_reg();
+                allocated++;
+                a.tre = create_inst_addiu;
+                addToInstBuffer(a,r1,0,tmp);                        
+            }else{
+                a.uno = push_temporary;
+                addToInstBuffer(a,r1,0,0);
+                release_reg();
+            }
+        }else{
+                r_passe_2(root->opr[0]);
+                
+                if(reg_available()){
+                    r2 = get_current_reg();
+                    allocate_reg();
+                    r1 = get_current_reg();
+                    allocated++;
+                }else{
+                    /*a.uno = push_temporary;
+                    addToInstBuffer(a,r1,0,0);
+                    r1 = get_current_reg();
+                    */
+                }
+             
+        }
+
+
+        if(root->opr[1]->nature == NODE_INTVAL){
+            tmp = root->opr[1]->value;
+           
+            if(reg_available()){
+
+                r2 = get_current_reg();
+                a.tre = create_inst_addiu;
+                addToInstBuffer(a,r2,0,tmp);
+
+
+                
+            }else{
+                pushed = true;
+                allocated--;
+                release_reg();
+                r1 = get_current_reg();
+                a.uno = push_temporary;
+                addToInstBuffer(a,r1,0,0);
+            }
+        }else{
+                r_passe_2(root->opr[1]);
+                
+                if(reg_available()){
+                    r2 = get_current_reg();
+                    release_reg();
+                    r1 = get_current_reg();
+                    allocated--;
+                }else{
+                    
+                }
+        }
+        
+        if(pushed){
+                pushed = true;
+                a.uno = pop_temporary;
+                addToInstBuffer(a,get_restore_reg(),0,0);
+                r1 = get_current_reg();
+                a.duo= create_inst_mult;
+                addToInstBuffer(a,r1,r1,get_restore_reg());
+        }else{
+            a.duo= create_inst_mult;
+            addToInstBuffer(a,r1,r2,0);
+            a.uno = create_inst_mflo;
+            addToInstBuffer(a,r1,0,0);
+        }
+        for(int i = allocated; i > 0;release_reg(), --i);
+}
