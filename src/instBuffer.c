@@ -42,7 +42,8 @@ void addToInstBuffer(instWoutArg i,int32_t a,int32_t b,int32_t c){
 }
 
 void releaseInstBuffer(){
-
+    if(buf){
+        
     for(int i = 0 ; i < buf->size  ; i++){
         
         switch(buf -> bf[i] -> nArg){
@@ -67,4 +68,6 @@ void releaseInstBuffer(){
     free(buf->bf);
 
     free(buf);
+
+    }
 }
