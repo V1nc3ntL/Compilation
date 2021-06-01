@@ -96,7 +96,8 @@ void r_passe_2(node_t root){
                    r_passe_2(root->opr[0]);
                 }
                 
-
+            case NODE_MINUS:
+                moins_inst(root);
                 break;
             case NODE_FUNC :
                 r_passe_2(root->opr[0]);
@@ -139,8 +140,7 @@ void r_passe_2(node_t root){
                     else{
                         create_inst_word(root->opr[0]->ident,root->opr[1]->value);
                         
-                        if( root->opr[1]->nature == NODE_PLUS &&
-                            root->opr[0]->nature == NODE_IDENT  ){
+                        if( root->opr[0]->nature == NODE_IDENT  ){
                             r_passe_2(root->opr[0]);
                             r_passe_2(root->opr[1]);
                             r1 = get_current_reg();
