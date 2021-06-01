@@ -6,13 +6,14 @@ marsCmd="java -jar"
 fst=""
 tstExtension=".tst"
 rstExtension=".rst"
+tstPath="../Tests"
 #pour chaque fichier de test
 failedTest=0
 passedTest=0
 totalTest=0
 if [ ! -f pgmName ];then 
     if [ ! -f $path$pgmName ];then 
-       cd $path && make;
+       cd $path && make && cd $testPath;
     fi
     cp $path$pgmName ./$pgmName 
 fi
