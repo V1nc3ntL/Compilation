@@ -95,7 +95,9 @@ void r_passe_2(node_t root){
                 {
                    r_passe_2(root->opr[0]);
                 }
-                
+            case NODE_MUL:
+                mul_inst(root);
+                break;   
             case NODE_MINUS:
                 moins_inst(root);
                 break;
