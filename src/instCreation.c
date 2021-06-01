@@ -283,8 +283,12 @@ void mul_inst(node_t root){
                 addToInstBuffer(a,get_restore_reg(),0,0);
                 r1 = get_current_reg();
                 a.duo= create_inst_mult;
-                addToInstBuffer(a,r1,r1,get_restore_reg());
+                addToInstBuffer(a,r1,get_restore_reg(),0);
         }else{
+            r1 = get_current_reg();
+            release_reg();
+            allocated--;
+            r2 = get_current_reg();
             a.duo= create_inst_mult;
             addToInstBuffer(a,r1,r2,0);
             a.uno = create_inst_mflo;
