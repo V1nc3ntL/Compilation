@@ -4,6 +4,7 @@
 #include "passe_2.h"
 #include "miniccutils.h"
 #include "instBuffer.h"
+#include "instCreation.h"
 #include <string.h>
 
 
