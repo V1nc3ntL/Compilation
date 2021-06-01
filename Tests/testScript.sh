@@ -1,8 +1,6 @@
 #!/bin/bash
 pgmName="minicc"
 path="../src/"
-pgm="./minicc"
-testPath="../Tests/"
 marsPath="../tools/Mars_4_2.jar nc np"
 marsCmd="java -jar"
 fst=""
@@ -14,12 +12,12 @@ passedTest=0
 totalTest=0
 if [ ! -f pgmName ];then 
     if [ ! -f $path$pgmName ];then 
-       cd $path && make && cp $pgmName $testPath$pgmName && cd $testPath;
-    else
-    	cp $path$pgmName $testPath$pgmName; 
+       cd $path && make;
     fi
+    cp $path$pgmName ./$pgmName 
 fi
 
+pgm="./minicc"
 
 for D in `find .  -mindepth 2 -type d  `;do
 
@@ -40,8 +38,9 @@ for D in `find .  -mindepth 2 -type d  `;do
             for f in $D/*$tstExtension; do  
                 ((totalTest=totalTest+1));      
                 $pgm $opt $f ;
-
+                echo $marsCmd $marsPath;
                 $marsCmd $marsPath $opt out.s > results;
+                cat results
                 cmp --silent results  "${f/$tstExtension/$rstExtension}";
 
                  if [ $? -eq 0 ];then
@@ -88,7 +87,6 @@ for D in `find .  -mindepth 2 -type d  `;do
             done   
         fi
     fi
-done 
-
+done
 echo -e "\t\t|\ttotal\t|\tfailed \t|\tpassed\t|"
 echo -e "\t\t|\t"$((totalTest))"\t|\t"$((failedTest))"\t|\t"$((passedTest))"\t|"
