@@ -185,6 +185,48 @@ void analyse_global (node_t root)
 
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1 (root->opr[1]);
+      // On vérifie que le l'addition se fait sur deux
+      // entités du même type
+
+      if(root -> opr[0] -> type == root -> opr[1] -> type)
+      {
+        // On attibue le type à la NODE_PLUS
+        root -> type = root -> opr[0] -> type;
+      }      
+      break;
+
+
+    case NODE_MINUS:
+
+      analyse_passe_1 (root->opr[0]);
+      analyse_passe_1 (root->opr[1]);
+      if(root -> opr[0] -> type == root -> opr[1] -> type)
+      {
+        // On attibue le type à la NODE_PLUS
+        root -> type = root -> opr[0] -> type;
+      }      
+      break;
+
+    case NODE_MUL:
+
+      analyse_passe_1 (root->opr[0]);
+      analyse_passe_1 (root->opr[1]);
+      if(root -> opr[0] -> type == root -> opr[1] -> type)
+      {
+        // On attibue le type à la NODE_PLUS
+        root -> type = root -> opr[0] -> type;
+      }      
+      break;
+
+    case NODE_DIV:
+    
+      analyse_passe_1 (root->opr[0]);
+      analyse_passe_1 (root->opr[1]);
+      if(root -> opr[0] -> type == root -> opr[1] -> type)
+      {
+        // On attibue le type à la NODE_PLUS
+        root -> type = root -> opr[0] -> type;
+      }      
       break;
 
     case NODE_PRINT:
