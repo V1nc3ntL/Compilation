@@ -120,111 +120,33 @@ int yywrap(void) {
 int main(int argc, char ** argv) {
    
     node_t program_root ;
-    int traceLvl = 0;
-    char* outName = NULL;
-    
-    int curArg , code = 0, nRegister = MAX_REG;
+
+    int tstIndex = 0;
 
     #if YYDEBUG
     yydebug = 1;
     #endif
-    int i = 0 ;
 
-    if(argc == 1)
+
+
+    if(argparser(argc,argv,&tstIndex) != 0)
         return -1;
+    if(!tstIndex)
+        return 0;
 
-    while((curArg=getopt(argc,argv,"botrsvh"))!=-1){
-        
-        i++;
 
-        if(code & B_OPTION)
-            return -1;
-            
-        if(code & H_OPTION){
-            printf(OPTIONS_DESC);
-            return 0;
-        }
-
-        switch(curArg){
-            case 'b':
-                if(argc > 2)
-                    return 1;
-                else
-                    printf(BANNER);
-                    return 0;
-            case 'h':
-                printf(OPTIONS_DESC);
-                return 0;
-
-            case 't': 
-                traceLvl = atoi(argv[i+1]);
-                code |= T_OPTION;
-                if( (traceLvl < MIN_TRACE) || (traceLvl > MAX_TRACE))   
-                    return -1;
-                else
-                    trace_level = traceLvl;
-                break;
-
-            case 'r':
-                nRegister = atoi(argv[i+1]);
-                code |= R_OPTION;
-                if( (nRegister < MIN_REG) || (nRegister > MAX_REG))   
-                    return -1;
-                else
-                    set_max_registers(nRegister);
-                break;
-
-            case 's':
-                if(code & V_OPTION)
-                    return -1;
-                else                
-                    code |= S_OPTION;
-                    stop_after_syntax = true;
-                break;
-
-            case 'v':
-                if(code & S_OPTION)
-                    return -1;
-                else
-                    code |= V_OPTION;
-                    stop_after_verif = true;
-                break;
-            
-            case 'o':
-                outName = strdup( argv[i+1]);
-                if(!outName)
-                    return -1;
-                break;
-            default:
-                break;
-        }
-    }
-
-    if(!(code & O_OPTION)){
-        outfile = DEFAULT_OUTFILE;
-    }else{
-        outfile = strdup(argv[2]);
-    }
-    if(!code)
-        yyin = fopen(argv[1], "r");
-    else {
-        if((code & O_OPTION ) || (code & T_OPTION) || (code & R_OPTION) )
-            yyin = fopen(argv[3], "r");
-        else
-            yyin = fopen(argv[2], "r");
-    }
-    
+    yyin = fopen(argv[tstIndex], "r");
 
     yyparse(&program_root);
     fclose(yyin);
+        
     analyse_tree(program_root);
+         
     yylex_destroy();
-
-    if(outName != NULL)
-        free(outName);
+    
     if(outfile != DEFAULT_OUTFILE)
        free(outfile); 
-
+       
     return 0;
 }
 

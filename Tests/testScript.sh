@@ -19,6 +19,7 @@ if [ ! -f pgmName ];then
        cd $path && make && cd $tstPath;
     fi
     cp $path$pgmName ./$pgmName 
+  
 fi
 
 for D in `find .  -mindepth 2 -type d  `;do
@@ -33,14 +34,11 @@ for D in `find .  -mindepth 2 -type d  `;do
         fst=marsCmd
         opt=
     fi
-
-    
     if [[ "$D" =~ Gencode ]];then
         if [[ "$D" =~ OK ]];then
             for f in $D/*$tstExtension; do  
                 ((totalTest=totalTest+1));      
                 $pgm $opt $f ;
-                echo $marsCmd $marsPath;
                 $marsCmd $marsPath $opt out.s > results;
                 cat results
                 cmp --silent results  "${f/$tstExtension/$rstExtension}";
@@ -60,13 +58,29 @@ for D in `find .  -mindepth 2 -type d  `;do
                 ((totalTest=totalTest+1));
                 $pgm $opt $f ;
                 $marsCmd $marsPath out.s ;
+                 $pgm $opt $f ;
+                $marsCmd $marsPath $opt out.s > results;
+                cat results
+                cmp --silent results  "${f/$tstExtension/$rstExtension}";
+
+                 if [ $? -eq 0 ];then
+                    ((failedTest=failedTest+1));
+                    tstFailed+="\t${f}\n"
+                    echo "$f" not passed
+                else
+                    ((passedTest=passedTest+1));
+                    echo "$f" passed
+                fi
+                rm results;
             done
         fi
     else
         if [[ "$D" =~ OK ]];then
-            for f in $D/*$tstExtension; do        
+        
+            for f in $D/*$tstExtension; do  
                 ((totalTest=totalTest+1));
                 $pgm $opt $f;
+                
                 if [ $? -eq 0 ];then
                     ((passedTest=passedTest+1));
                     echo "$f" passed

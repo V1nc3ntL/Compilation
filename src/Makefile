@@ -2,7 +2,7 @@
 EXE=minicc
 UTILS=utils
 OBJ_DIR=obj
-OBJ=y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o instBuffer.o instCreation.o
+OBJ=y.tab.o lex.yy.o arch.o common.o passe_1.o passe_2.o instBuffer.o instCreation.o argparser.o
 
 DEBUG_LEX=0
 DEBUG_YACC=0
@@ -38,11 +38,11 @@ y.tab.c: grammar.y Makefile
 	@echo "| yacc -d grammar.y"
 	@yacc -d grammar.y
 
-lex.yy.c: lexico.l Makefile
+lex.yy.c: lexico.l argparser.c argparser.h Makefile
 	@echo "| lex $(LEX_FLAGS) lexico.l"
 	@lex $(LEX_FLAGS) lexico.l
 
-lex.yy.o: lex.yy.c
+lex.yy.o: lex.yy.c   Makefile
 	@echo "| Compiling $@"
 	@gcc $(YACC_FLAGS) $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
@@ -71,6 +71,10 @@ instBuffer.o:  instBuffer.c instBuffer.h defs.h Makefile
 	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 
 instCreation.o:  instCreation.c instCreation.h defs.h Makefile
+	@echo "| Compiling $@"
+	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
+	
+argparser.o:  argparser.c argparser.h Makefile
 	@echo "| Compiling $@"
 	@gcc $(CFLAGS) $(INCLUDE) -o $(OBJ_DIR)/$@ -c $<
 

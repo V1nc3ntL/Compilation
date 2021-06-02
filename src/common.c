@@ -19,42 +19,38 @@ int32_t trace_level = DEFAULT_TRACE_LEVEL;
 extern bool stop_after_syntax;
 extern bool stop_after_verif;
 
-
 void
 parse_args (int argc, char **argv)
 {
   // A implementer (la ligne suivante est a changer)
   infile = argv[1];
+  
 }
-
-
 
 void
 free_nodes (node_t n)
 {
   if (n != NULL)
+  {
+    switch (n->nature)
     {
-      switch (n->nature)
-	{
-	case NODE_STRINGVAL:
-	  free (n->str);
-	  break;
-	case NODE_IDENT:
-	  free (n->ident);
-	  //free(n->decl_node);
-	  break;
-	default:
-	  break;
-	}
-
-      for (int i = 0; i < n->nops; i++)	// On free tous les fils d'une node          
-	free_nodes (n->opr[i]);
+    case NODE_STRINGVAL:
+      free (n->str);
+      break;
+    case NODE_IDENT:
+      free (n->ident);
+      //free(n->decl_node);
+      break;
+    default:
+      break;
+    }
+    for (int i = 0; i < n->nops; i++)	// On free tous les fils d'une node          
+      free_nodes (n->opr[i]);
       free (n->opr);
       free (n);			// On free la node en question
-    }
+  }
 
 }
-
 
 char *
 strdup (char *s)
@@ -63,7 +59,6 @@ strdup (char *s)
   strcpy (r, s);
   return r;
 }
-
 
 static int32_t
 dump_tree2dot_rec (FILE * f, node_t n, int32_t node_num)

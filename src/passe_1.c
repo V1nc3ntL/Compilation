@@ -6,7 +6,7 @@
 #include "miniccutils.h"
 #include "stdlib.h"
 #include "common.h"
-int trace_level;
+
 
 void analyse_node_ident (node_t n)
 {
@@ -14,19 +14,13 @@ void analyse_node_ident (node_t n)
   int32_t off;
   node_t tmp = get_decl_node(n->ident);
 
-  if (tmp)
-  {
-     
-
-    n -> offset = tmp->offset;
-    n -> type   = tmp->type;
-    n -> decl_node = tmp;
-       
-  }
-        
-  else
-  {
-
+    if (tmp)
+    {
+      n -> offset = tmp->offset;
+      n -> type   = tmp->type;
+      n -> decl_node = tmp;
+    }
+    
     off = env_add_element (n -> ident, n);
 
     if (off >= 0)
@@ -35,35 +29,25 @@ void analyse_node_ident (node_t n)
       n -> offset = off;
     }
 
-    else
-    {
-      printf("Error line %d: variable already declared",n->lineno);
-     exit(-1);
-    }
-  }
-
-
 }
 
 void analyse_node_global_ident (node_t n)
 {
   int32_t off;
   
-    n -> global_decl = true;
+  n -> global_decl = true;
+  
+  off = env_add_element (n -> ident, n);
+  
+  if (off >= 0)
+  {
+    n -> offset = off;
+  }
+  else
+  {
+    n -> offset = ((node_t) get_decl_node(n->ident))->offset;
     
-    off = env_add_element (n -> ident, n);
-    
-    if (off >= 0)
-    {
-
-      n -> offset = off;
-    }
-    // Affectation de variables globales dans une variable globale
-    else
-    {
-      n -> offset = ((node_t) get_decl_node(n->ident))->offset;
-      
-    }
+  }
 }
 
 void analyse_node_func (node_t n)
@@ -151,11 +135,8 @@ void analyse_global (node_t root)
       break;
 
     case NODE_AFFECT:
-
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1 (root->opr[1]);
-
-
       break;
 
     case NODE_PLUS:
@@ -168,9 +149,34 @@ void analyse_global (node_t root)
 
     }
 }
+void analyse_node_decl(node_t root){
 
+    int tmp;
+    if(root -> opr[1] == NULL)
+    {
+      root -> opr[0] -> type = root -> type;
+    }
+    else if(root -> opr[0] == NULL)
+    {
+        root -> type = root -> opr[1] -> type ;
+    }else{
+      if(root->opr[0]->nature == NODE_IDENT){
+        tmp = env_add_element (root ->opr[0]->ident, root ->opr[0]);
+
+        if (tmp < 0){
+          printf("Error line %d:Variable already declared",root ->opr[0]->lineno);
+          exit(-1);
+        }
+      }else{
+        analyse_passe_1(root -> opr[0]);
+      }
+  
+      analyse_passe_1(root -> opr[1]);
+    }
+}
 void analyse_passe_1 (node_t root)
 {
+
   if (!root)
   {
     return;
@@ -224,27 +230,10 @@ void analyse_passe_1 (node_t root)
       break;
 
     case NODE_DECL:
-
-      if(root -> opr[1] == NULL)
-      {
-        root -> opr[0] -> type = root -> type;
-      }
-      else if(root -> opr[0] == NULL)
-      {
-         root -> type = root -> opr[1] -> type ;
-      }else{
-          if(root -> opr[0] -> nature == root -> opr[1] -> nature)
-        {
-          if(root -> opr[0] -> type == TYPE_NONE)
-          {
-            root -> opr[0] -> type = root -> opr[1] -> type;
-          }
-        }
-      }
+      analyse_node_decl(root);
      break;
 
     case NODE_FUNC:
-
       push_context ();
       analyse_passe_1 (root->opr[0]);
       analyse_passe_1(root -> opr[1]);

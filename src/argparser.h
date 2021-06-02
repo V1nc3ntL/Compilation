@@ -19,5 +19,5 @@
 #define MAX_REG 8
 #define DEFAULT_OUT_NAME "out.s"
 #define OPTIONS_DESC "\n*** Compilateur minicc : options\n\t-b:\tAffiche le nom du compilateur et de ses programmeurs\n\t-h:\tAffiche la liste des options\n\t-o\t\n\t-r\t\n\t-s\t\n\t-t\t\n\t-v\t\n"
-
+int argparser(int argc, char ** argv, int * tstIndex);
 #endif

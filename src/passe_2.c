@@ -44,7 +44,8 @@ void r_passe_2_print(node_t root){
                     wreckOffset = root->offset;
                     addToInstBuffer(a,4,4,varDecl<<2);
                 }else{
-                    addToInstBuffer(a,4,4,root->offset-wreckOffset+(varDecl<<2));  
+                    addToInstBuffer(a,4,4,root->offset-wreckOffset+(varDecl<<2));
+                    //+(varDecl<<2));  
                 }
                 
                 
@@ -67,7 +68,7 @@ void r_passe_2_print(node_t root){
                     addToInstBuffer(a,r1, 0x1001,0);   
  
                     a.tre = create_inst_lw;
-                    addToInstBuffer(a,4,root->offset-4,r1);
+                    addToInstBuffer(a,4,root->offset,r1);
                
                     a.tre = create_inst_addiu;
                     addToInstBuffer(a,2,0,1);
@@ -96,6 +97,8 @@ void r_passe_2(node_t root){
                    r_passe_2(root->opr[0]);
                 }
             case NODE_MUL:
+                r_passe_2(root->opr[0]);
+                r_passe_2(root->opr[1]);
                 mul_inst(root);
                 break;   
             case NODE_MINUS:

@@ -12,10 +12,7 @@ void allocateArg(inst* in,int32_t a,int32_t b,int32_t c){
         in->nArg = 3;
         in -> arg = (int32_t*)malloc(in->nArg*sizeof(int32_t));
 
-
         for(int i = 0 ; i < in->nArg; in->arg[i] = args[i], i++ );
-
-       
 }
 
 void addToInstBuffer(instWoutArg i,int32_t a,int32_t b,int32_t c){
