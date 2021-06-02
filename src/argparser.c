@@ -103,7 +103,5 @@ int argparser(int argc, char ** argv, int * tstIndex){
     if(!code)
         *tstIndex = 1;
 
-    printf("tstIndex vaut %d",tstIndex);
-
     return 0;
 }
